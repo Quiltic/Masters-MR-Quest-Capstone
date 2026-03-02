@@ -1,0 +1,12 @@
+# SHIT DOCKS
+https://developers.meta.com/horizon/downloads/package/meta-xr-core-sdk/
+
+
+# Setups
+Start:                   https://developers.meta.com/horizon/documentation/unity/unity-tutorial-hello-vr/
+Passthrough:             https://developers.meta.com/horizon/documentation/unity/unity-mr-utility-kit-gs/
+Basic Scene setup from:  https://www.youtube.com/watch?v=3sVgwPxR4TE
+
+# Fix the simulator 
+Under Preferences go to Meta XR Simulator and select version 78 from the available versions. All higher versions crash.
+
