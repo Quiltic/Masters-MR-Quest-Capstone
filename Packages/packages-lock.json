@@ -1,5 +1,21 @@
 {
   "dependencies": {
+    "com.codedimmersions.eostransport": {
+      "version": "file:C:/Users/xrsystem1/Downloads/EOSTransport-3.0.0b3/package.tar.gz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.2"
+      }
+    },
+    "com.codedimmersions.mirrorvr": {
+      "version": "file:C:/Users/xrsystem1/Downloads/package.tar.gz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.2"
+      }
+    },
     "com.learnxr.core": {
       "version": "https://github.com/dilmerv/com.learnxr.core.git",
       "depth": 0,
@@ -160,7 +176,7 @@
     },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.2.2",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

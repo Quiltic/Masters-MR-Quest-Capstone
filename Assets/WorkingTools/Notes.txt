@@ -1,12 +1,4 @@
-# SHIT DOCKS
-https://developers.meta.com/horizon/downloads/package/meta-xr-core-sdk/
+Encription key
+efcb6f518b9e1e9288350559507cb49fa00cb4c18235fe6d07013ce8f24f4787
 
-
-# Setups
-Start:                   https://developers.meta.com/horizon/documentation/unity/unity-tutorial-hello-vr/
-Passthrough:             https://developers.meta.com/horizon/documentation/unity/unity-mr-utility-kit-gs/
-Basic Scene setup from:  https://www.youtube.com/watch?v=3sVgwPxR4TE
-
-# Fix the simulator 
-Under Preferences go to Meta XR Simulator and select version 78 from the available versions. All higher versions crash.
-
+Yes I know your not suposed to show anyone, but security is not my main focus for this capstone.
