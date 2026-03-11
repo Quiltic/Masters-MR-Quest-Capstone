@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "com.codedimmersions.eostransport": "file:C:/Users/xrsystem1/Downloads/EOSTransport-3.0.0b3/package.tar.gz",
-    "com.codedimmersions.mirrorvr": "file:C:/Users/xrsystem1/Downloads/package.tar.gz",
     "com.learnxr.core": "https://github.com/dilmerv/com.learnxr.core.git",
     "com.meta.xr.mrutilitykit": "85.0.0",
     "com.meta.xr.sdk.core": "85.0.0",
@@ -13,7 +11,7 @@
     "com.unity.ide.rider": "3.0.39",
     "com.unity.ide.visualstudio": "2.0.26",
     "com.unity.inputsystem": "1.18.0",
-    "com.unity.multiplayer.center": "1.0.1",
+    "com.unity.nuget.mono-cecil": "1.11.6",
     "com.unity.nuget.newtonsoft-json": "3.2.2",
     "com.unity.render-pipelines.universal": "17.3.0",
     "com.unity.test-framework": "1.6.0",

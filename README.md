@@ -28,15 +28,19 @@ Passthrough:             https://developers.meta.com/horizon/documentation/unity
 
 Basic Scene setup from:  https://www.youtube.com/watch?v=3sVgwPxR4TE
 
-P2P:                     https://medium.com/@lemapp09/beginning-game-development-peer-to-peer-networking-92529646bf77
+P2P:                     https://codedimmersions.gitbook.io/mirrorvr/manual/getting-started
 
-&nbsp;   (p2p using Mirror, as p2p for meta is depreciated as of 2023)
+&nbsp;                        https://purrnet.gitbook.io/docs/getting-started/getting-started
+
+    (p2p for meta is depreciated as of 2023)
 
 
 
 
 
-\# Fix the simulator 
+
+
+\# Fix the simulator
 
 Under Preferences go to Meta XR Simulator and select version 78 from the available versions. All higher versions crash.
 
