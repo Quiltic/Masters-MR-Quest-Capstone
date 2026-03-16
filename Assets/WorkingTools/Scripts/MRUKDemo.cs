@@ -74,8 +74,11 @@ public class MRUKDemo : MonoBehaviour
     public void BindRoomInfo(MRUKRoom room)
     {
         currentRoom = room;
+        //Debug.Log(room.transform.position);
+        //Debug.Log(room.transform.rotation);
         SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room was bound to current room.");
         SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room id {nameof(room)}.");
+        //SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room orientation {room.transform.position} : {room.transform.rotation}.");
         //SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room {}");
     }
 }
