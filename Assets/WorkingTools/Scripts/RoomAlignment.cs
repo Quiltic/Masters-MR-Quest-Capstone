@@ -24,6 +24,7 @@ public class RoomAlignment : MonoBehaviour
     public bool SceneAndRoomInfoAvailable => currentRoom != null && sceneHasBeenLoaded;
 
     public sendData serverRoom;
+    public Vector2 whereAmIInRoom;
 
 
     public (Vector3, Quaternion) playerOffset;
@@ -44,7 +45,10 @@ public class RoomAlignment : MonoBehaviour
     {
         public Vector3 roomFloorPosData;
         public Quaternion roomFloorRotationData;
-        public string stringData;
+        public string jsonData;
+
+        public Vector2 whereIAmInRoom;
+        public Quaternion myRotationInRoom; // which i have no idea how to get yet but we are working on it.
         
 
         //public override string ToString()
@@ -110,16 +114,21 @@ public class RoomAlignment : MonoBehaviour
         //dataToSend.roomData = room; // for server
         dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
         dataToSend.roomFloorRotationData = room.transform.rotation;
-        dataToSend.stringData = $"{nameof(MRUKDemo)} room was bound to {nameof(room)}.";
-        SpatialLogger.Instance.LogInfo(dataToSend.stringData);
+        dataToSend.jsonData = $"{nameof(MRUKDemo)} room was bound to {nameof(room)}.";
+        SpatialLogger.Instance.LogInfo(dataToSend.jsonData);
+
+        dataToSend.whereIAmInRoom = getWhereIAmInRoom();
+        SpatialLogger.Instance.LogInfo($"I think your HERE: {dataToSend.whereIAmInRoom.x}, {dataToSend.whereIAmInRoom.y}.");
+        transform.position = dataToSend.whereIAmInRoom;
+
 
         //SpatialLogger.Instance.LogInfo(room.Anchors.ToString());
     }
 
     private void gotData(PlayerID player, sendData data, bool asServer)
     {
-        Debug.Log($"Recieved Data: {data.stringData}");
-        SpatialLogger.Instance.LogInfo($"Recieved Data: {data.stringData}");
+        Debug.Log($"Recieved Data: {data.jsonData}");
+        SpatialLogger.Instance.LogInfo($"Recieved Data: {data.jsonData}");
         serverRoom = data;
 
         // This is where the magic happens
@@ -128,6 +137,8 @@ public class RoomAlignment : MonoBehaviour
         double ClientDistance = distance(currentRoom.FloorAnchor.transform.position, Vector3.zero); // (b)
 
         double Rotation = currentRoom.transform.rotation.eulerAngles.y; // (angle B)
+
+
 
         //if ( Rotation <= 180 ) {
 
@@ -159,7 +170,7 @@ public class RoomAlignment : MonoBehaviour
 
 
             if (!SceneAndRoomInfoAvailable) // this is very bad if it hits
-                dataToSend.stringData = "No room data found.";
+                dataToSend.jsonData = "No room data found.";
 
             networkManager.Send(player, dataToSend);
         }
@@ -173,14 +184,14 @@ public class RoomAlignment : MonoBehaviour
     }
 
 
-    private void Update()
-    {
-        SpatialLogger.Instance.Clear();
+    //private void Update()
+    //{
+    //    SpatialLogger.Instance.Clear();
 
 
-        SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room orientation {currentRoom.FloorAnchor.transform.position} : {currentRoom.FloorAnchor.transform.rotation}.");
-        SpatialLogger.Instance.LogInfo($"Headset Location: {headset.transform.position}");
-    }
+    //    SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room orientation {currentRoom.FloorAnchor.transform.position} : {currentRoom.FloorAnchor.transform.rotation}.");
+    //    SpatialLogger.Instance.LogInfo($"Headset Location: {headset.transform.position}");
+    //}
 
     private double distance(Vector3 a, Vector3 b)
     {
@@ -192,4 +203,54 @@ public class RoomAlignment : MonoBehaviour
         return (Math.Sqrt(distance));
     }
 
+    private double sqr(double a)
+    {
+        return a*a;
+    }
+
+    private Vector2 getWhereIAmInRoom()
+    {
+        // https://math.stackexchange.com/questions/100448/finding-location-of-a-point-on-2d-plane-given-the-distances-to-three-other-know
+        // https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
+        double x0;
+        double y0;
+
+        Vector2[] walls = new Vector2[currentRoom.WallAnchors.Count];
+        double[] walldistances = new double[currentRoom.WallAnchors.Count];
+
+
+        int index = 0; // for indexing foreach loops
+        // get the x,y,d for each datasource (we are ignoring z as it can be found with a simple lookup)
+        foreach (MRUKAnchor wall in currentRoom.WallAnchors)
+        {
+            walls[index] = new Vector2( wall.transform.position.x, wall.transform.position.z );
+            walldistances[index] = distance(wall.transform.position, Vector3.zero);
+            Debug.Log($"{walls[index].x},{walls[index].y},{distance(wall.transform.position, Vector3.zero)}");
+            index++;
+        }
+
+        index = 0;
+
+        var A = (-2 * walls[0].x + 2 * walls[1].x);
+        var B = (-2 * walls[0].y + 2 * walls[1].y);
+        var C = sqr(walldistances[0]) - sqr(walldistances[1]) - sqr(walls[0].x) + sqr(walls[1].x) - sqr(walls[0].y) + sqr(walls[1].y);
+
+        var D = (-2 * walls[1].x + 2 * walls[2].x);
+        var E = (-2 * walls[1].y + 2 * walls[2].y);
+        var F = sqr(walldistances[1]) - sqr(walldistances[2]) - sqr(walls[1].x) + sqr(walls[2].x) - sqr(walls[1].y) + sqr(walls[2].y);
+
+        x0 = (C * E - F * B) / (E * A - B * D);
+        y0 = (C * D - A * F) / (B * D - A * E);
+
+        //var D = distance(walls[0],walls[1]); // written as |S1S2| in the link above
+
+        //var a = sqr(walldistances[0]) - sqr(walldistances[1]) + sqr(D);
+        //a /= 2 * D;
+        //var h = walldistances[0] - a;
+
+        //x0 = walls[0].x + h * (walls[1].y - walls[0].y) / D;
+        //y0 = walls[0].y + h * (walls[1].x - walls[0].x) / D;
+
+        return new Vector2((float)x0, (float)y0);
+    }
 }
