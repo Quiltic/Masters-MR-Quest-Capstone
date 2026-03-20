@@ -12,8 +12,8 @@ using UnityEngine;
 public class RoomAlignment : MonoBehaviour
 {
     public NetworkManager networkManager;
-    private sendData dataToSend;
-
+    public sendData dataToSend;
+    public sendData roomDataReceived;
 
     [SerializeField] public MRUK mruk;
     [SerializeField] public GameObject headset;
@@ -23,11 +23,6 @@ public class RoomAlignment : MonoBehaviour
     public MRUKRoom currentRoom;
     public bool SceneAndRoomInfoAvailable => currentRoom != null && sceneHasBeenLoaded;
 
-    public sendData serverRoom;
-    public Vector2 whereAmIInRoom;
-
-
-    public (Vector3, Quaternion) playerOffset;
 
 
     //private GameObject myRoom;
@@ -43,6 +38,8 @@ public class RoomAlignment : MonoBehaviour
 
     public struct sendData : IPackedAuto
     {
+
+        public GameObject chosenWall;
         public Vector3 roomFloorPosData;
         public Quaternion roomFloorRotationData;
         public string jsonData;
@@ -117,9 +114,29 @@ public class RoomAlignment : MonoBehaviour
         dataToSend.jsonData = $"{nameof(MRUKDemo)} room was bound to {nameof(room)}.";
         SpatialLogger.Instance.LogInfo(dataToSend.jsonData);
 
-        dataToSend.whereIAmInRoom = getWhereIAmInRoom();
-        SpatialLogger.Instance.LogInfo($"I think your HERE: {dataToSend.whereIAmInRoom.x}, {dataToSend.whereIAmInRoom.y}.");
+        
+
+
+        dataToSend.chosenWall = room.WallAnchors[0].gameObject; // im unsure if this is the parrent, child, or a combo of but we testing it anyway
+
+        Vector2 localPos = new Vector2();
+        room.Anchors.ForEach(anchor => {
+            localPos.x += anchor.transform.position.x;
+            localPos.y += anchor.transform.position.z; // y is height so we dont care.
+        });
+        localPos.x /= room.Anchors.Count;
+        localPos.y /= room.Anchors.Count;
+
+        Debug.LogError(localPos);
+
+        dataToSend.whereIAmInRoom = localPos;//getWhereIAmInRoom();
+        SpatialLogger.Instance.LogInfo($"I think your HERE: {dataToSend.whereIAmInRoom}.");
         transform.position = dataToSend.whereIAmInRoom;
+
+        Debug.LogError(room.WallAnchors[0].PlaneRect.Value); // gives x,y,width,height
+        //dataToSend.chosenWall.transform.position = room.WallAnchors[0].transform.position;
+        //dataToSend.chosenWall.transform.rotation = room.WallAnchors[0].transform.rotation;
+        //dataToSend.chosenWall.transform.localScale = room.WallAnchors[0].transform.localScale;
 
 
         //SpatialLogger.Instance.LogInfo(room.Anchors.ToString());
@@ -129,7 +146,7 @@ public class RoomAlignment : MonoBehaviour
     {
         Debug.Log($"Recieved Data: {data.jsonData}");
         SpatialLogger.Instance.LogInfo($"Recieved Data: {data.jsonData}");
-        serverRoom = data;
+        roomDataReceived = data;
 
         // This is where the magic happens
 
@@ -254,3 +271,39 @@ public class RoomAlignment : MonoBehaviour
         return new Vector2((float)x0, (float)y0);
     }
 }
+
+
+// from scene debugger
+/// <summary>
+/// Exports the current scene data to a JSON file if the specified condition is met.
+/// </summary>
+/// <param name="isOn">If set to true, the scene data will be exported to JSON.</param>
+//public void ExportJSON(bool isOn)
+//{
+//    try
+//    {
+//        if (isOn)
+//        {
+//            bool exportGlobalMesh = true;
+//            if (exportGlobalMeshJSONDropdown)
+//            {
+//                exportGlobalMesh = exportGlobalMeshJSONDropdown.options[exportGlobalMeshJSONDropdown.value].text.ToLower() == "true";
+//            }
+//            var scene = MRUK.Instance.SaveSceneToJsonString(
+//            exportGlobalMesh
+//            );
+//            var filename = $"MRUK_Export_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.json";
+//            var path = Path.Combine(Application.persistentDataPath, filename);
+//            File.WriteAllText(path, scene);
+//            Debug.Log($"Saved Scene JSON to {path}");
+//        }
+//    }
+//    catch (Exception e)
+//    {
+//        SetLogsText("\n[{0}]\n {1}\n{2}",
+//            nameof(ExportJSON),
+//            e.Message,
+//            e.StackTrace
+//        );
+//    }
+//}

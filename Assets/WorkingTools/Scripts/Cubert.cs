@@ -16,16 +16,16 @@ public class Cubert : MonoBehaviour
 
     void Start()
     {
-        transform.position = ra.serverRoom.whereIAmInRoom; //ra.currentRoom.FloorAnchor.transform.position;
+        transform.position = ra.currentRoom.FloorAnchor.transform.position;
         transform.rotation = ra.currentRoom.FloorAnchor.transform.rotation;
 
         // to possition the location of the host in realspace. idk if this will work
-        if (ra.currentRoom.FloorAnchor.transform.position != ra.serverRoom.roomFloorPosData) // for some reason the code never accepts isServer or isHost
-        {
-            //Debug.LogWarning($"{ra.networkManager.isServer}, {ra.networkManager.isHost}");
-            transform.position = ra.serverRoom.whereIAmInRoom;
-            transform.rotation = ra.serverRoom.roomFloorRotationData;
-        }
+        //if (ra.currentRoom.FloorAnchor.transform.position != ra.roomDataReceived.roomFloorPosData) // for some reason the code never accepts isServer or isHost
+        //{
+        //    //Debug.LogWarning($"{ra.networkManager.isServer}, {ra.networkManager.isHost}");
+        //    transform.position = ra.roomDataReceived.whereIAmInRoom;
+        //    transform.rotation = ra.roomDataReceived.roomFloorRotationData;
+        //}
     }
 
     //// Update is called once per frame

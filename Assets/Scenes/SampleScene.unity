@@ -14626,6 +14626,7 @@ MonoBehaviour:
     jsonData: 
     whereIAmInRoom: {x: 0, y: 0}
     myRotationInRoom: {x: 0, y: 0, z: 0, w: 0}
+  whereAmIInRoom: {x: 0, y: 0}
   blinder: {fileID: 1676081325}
 --- !u!4 &1009318747
 Transform:
@@ -23233,7 +23234,7 @@ Transform:
   m_GameObject: {fileID: 1676081325}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: -0.5}
-  m_LocalPosition: {x: 0, y: 0, z: 0.1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.1129}
   m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
   m_ConstrainProportionsScale: 1
   m_Children: []
