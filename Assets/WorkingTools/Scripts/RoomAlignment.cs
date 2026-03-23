@@ -15,49 +15,45 @@ public class RoomAlignment : MonoBehaviour
     public sendData dataToSend;
     public sendData roomDataReceived;
 
+    // headset data
     [SerializeField] public MRUK mruk;
     [SerializeField] public GameObject headset;
 
 
+    // roomdata
     private bool sceneHasBeenLoaded;
     public MRUKRoom currentRoom;
     public bool SceneAndRoomInfoAvailable => currentRoom != null && sceneHasBeenLoaded;
 
-
-
-    //private GameObject myRoom;
-
-    // FOR ME ON Wensdat!
-    // Use the wallsss as anchor points (scince they will most likely be the same across headsets)
-
-
+    // here to make people not look at the world before they load in (lazy but effective)
     public GameObject blinder;
 
-
+public double theta;
     [System.Serializable]
 
     public struct sendData : IPackedAuto
     {
 
-        public GameObject chosenWall;
-        public Vector3 roomFloorPosData;
-        public Quaternion roomFloorRotationData;
-        public string jsonData;
+        //public GameObject chosenWall;
+        
+        public string jsonData; // the full json for room data
 
         public Vector2 whereIAmInRoom;
         public Quaternion myRotationInRoom; // which i have no idea how to get yet but we are working on it.
+
+        // used for ground truth position and to calculate rotation
+        public Vector3 roomFloorPosData;
+
+        // the following is used to get ground truth rotation
+        public Rect mainWall;
+        public Rect secondaryWall;
+        public Quaternion roomFloorRotationData;
         
-
-        //public override string ToString()
-        //{
-        //    return $"ID: {intData}, {stringData}";
-        //}
-
-        //public (Vector3, Quaternion) Get()
-        //{
-        //    return (roomFloorPosData, roomFloorRotationData);
-        //}
     }
+
+    // idea: use the floor, and 2 walls to determine ground truth "north"
+    // to do this we will make a triangle between the 3 objects and get the angle the floor faces twords a wall
+
 
 
     private void OnEnable()
@@ -108,72 +104,79 @@ public class RoomAlignment : MonoBehaviour
     public void BindRoomInfo(MRUKRoom room)
     {
         currentRoom = room; // for self
-        //dataToSend.roomData = room; // for server
+
+        dataToSend.jsonData = MRUK.Instance.SaveSceneToJsonString( true );
+        SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room was bound to {nameof(room)}.");
+
+        /* The below idea is to make a triangle from the floor and the first 2 rooms in a list.
+         * We pretend that the angle from the floor to the first wall is the ground truth rotation
+         * See gotData for the second half
+         */
+
+        // set walls data
+        dataToSend.mainWall = room.WallAnchors[0].PlaneRect.Value;
+        dataToSend.secondaryWall = room.WallAnchors[1].PlaneRect.Value;
+
         dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
         dataToSend.roomFloorRotationData = room.transform.rotation;
-        dataToSend.jsonData = $"{nameof(MRUKDemo)} room was bound to {nameof(room)}.";
-        SpatialLogger.Instance.LogInfo(dataToSend.jsonData);
+
+        //Debug.LogError(room.WallAnchors[0].PlaneRect.Value); // gives x,y,width,height
+        //Debug.LogError(room.WallAnchors[0].transform.position); // gives position... probably in testing it doesent give that so
+
+
+        //SpatialLogger.Instance.LogInfo(room.Anchors.ToString());
+
+        //triangle(room.FloorAnchor, room.WallAnchors[0], room.WallAnchors[1]); // idk what to do with this yet
 
         
 
 
-        dataToSend.chosenWall = room.WallAnchors[0].gameObject; // im unsure if this is the parrent, child, or a combo of but we testing it anyway
-
-        Vector2 localPos = new Vector2();
-        room.Anchors.ForEach(anchor => {
-            localPos.x += anchor.transform.position.x;
-            localPos.y += anchor.transform.position.z; // y is height so we dont care.
-        });
-        localPos.x /= room.Anchors.Count;
-        localPos.y /= room.Anchors.Count;
-
-        Debug.LogError(localPos);
-
-        dataToSend.whereIAmInRoom = localPos;//getWhereIAmInRoom();
-        SpatialLogger.Instance.LogInfo($"I think your HERE: {dataToSend.whereIAmInRoom}.");
-        transform.position = dataToSend.whereIAmInRoom;
-
-        Debug.LogError(room.WallAnchors[0].PlaneRect.Value); // gives x,y,width,height
-        //dataToSend.chosenWall.transform.position = room.WallAnchors[0].transform.position;
-        //dataToSend.chosenWall.transform.rotation = room.WallAnchors[0].transform.rotation;
-        //dataToSend.chosenWall.transform.localScale = room.WallAnchors[0].transform.localScale;
 
 
-        //SpatialLogger.Instance.LogInfo(room.Anchors.ToString());
+
+        /* Below is the idea for using principle component analisis
+         * The problem is that if more objects existed on one side of the room in one scan it skews the "center" of the room
+         */
+        //dataToSend.chosenWall = room.WallAnchors[0].gameObject; // is parent
+        //Vector2 localPos = new Vector2();
+        //room.Anchors.ForEach(anchor => {
+        //    localPos.x += anchor.transform.position.x;
+        //    localPos.y += anchor.transform.position.z; // y is height so we dont care.
+        //});
+        //localPos.x /= room.Anchors.Count;
+        //localPos.y /= room.Anchors.Count;
+
+        //Debug.LogError(localPos);
+
+        //dataToSend.whereIAmInRoom = localPos;//getWhereIAmInRoom();
+        //SpatialLogger.Instance.LogInfo($"I think your HERE: {dataToSend.whereIAmInRoom}.");
+        //transform.position = dataToSend.whereIAmInRoom;
+
     }
 
     private void gotData(PlayerID player, sendData data, bool asServer)
     {
-        Debug.Log($"Recieved Data: {data.jsonData}");
-        SpatialLogger.Instance.LogInfo($"Recieved Data: {data.jsonData}");
+        Debug.Log($"Recieved Data From: {player}");
+        SpatialLogger.Instance.LogInfo($"Recieved Data From: {player}");
         roomDataReceived = data;
 
         // This is where the magic happens
 
-        double HostDistance = distance(data.roomFloorPosData, Vector3.zero); // (a)
-        double ClientDistance = distance(currentRoom.FloorAnchor.transform.position, Vector3.zero); // (b)
+        (int,int) loc = getMainSecondaryWalls(data.mainWall, data.secondaryWall);
 
-        double Rotation = currentRoom.transform.rotation.eulerAngles.y; // (angle B)
-
+        triangle(currentRoom.FloorAnchor, currentRoom.WallAnchors[loc.Item1], currentRoom.WallAnchors[loc.Item2]);
 
 
-        //if ( Rotation <= 180 ) {
-
-        //if (Rotation > 180) { 
-        //    Rotation = Rotation - 360;
-        //}
-
-        
+        Debug.Log($"Wall locations in array: {loc}");
 
 
 
-        //Vector3 ClientP = new Vector3(0.48f, -0.11f, 1.77f);
-        //Debug.Log($"HostP: {}"); // 2.146
-        //Debug.Log($"ClientP: {}"); // 1.837
-        //Debug.Log($"HostR: {new Quaternion(0.44f, -0.54f, -0.54f, -0.44f).eulerAngles}"); // 270,101.65
-        //Debug.Log($"ClientR: {new Quaternion(-0.53f, -0.47f, -0.47f, 0.53f).eulerAngles}"); // 270, 276.87
+        //double HostDistance = distance(data.roomFloorPosData, Vector3.zero); // (a)
+        //double ClientDistance = distance(currentRoom.FloorAnchor.transform.position, Vector3.zero); // (b)
 
-        // I havent made the magic yet though...
+        //double Rotation = currentRoom.transform.rotation.eulerAngles.y; // (angle B)
+
+
     }
 
     private void someoneJoined(PlayerID player, bool isReconnect, bool asServer)
@@ -210,100 +213,162 @@ public class RoomAlignment : MonoBehaviour
     //    SpatialLogger.Instance.LogInfo($"Headset Location: {headset.transform.position}");
     //}
 
+
+
+    private (int, int) getMainSecondaryWalls(Rect mainWall, Rect secondaryWall)
+    {
+        // The locations for where the 2 walls are most likly are in this rooms array
+        // we need this as the meshes dont line up perfectly or are garenteed to be ordered the same
+
+        (int,float) mainWallLocation = (-1,200); // location, distance away
+        (int, float) secondaryWallLocation = (-1,200);
+        double tune = 0.15; // margin for error of this #
+
+        int index = 0; // because enumerating in C# kinda sucks
+        foreach (var wall in currentRoom.WallAnchors)
+        {
+            Rect wallData = wall.PlaneRect.Value; // we dont need any other data here
+
+            float comparisonMain = mainWall.x / wallData.x;
+            float comparisonSecond = secondaryWall.x / wallData.x;
+
+            comparisonMain *= mainWall.y / wallData.y;
+            comparisonSecond *= secondaryWall.y / wallData.y;
+
+            comparisonMain *= mainWall.width / wallData.width;
+            comparisonSecond *= secondaryWall.width / wallData.width;
+
+            comparisonMain *= mainWall.height / wallData.height;
+            comparisonSecond *= secondaryWall.height / wallData.height;
+
+
+            comparisonMain -= 1;
+            comparisonSecond -= 1;
+
+
+            // we are looking for values that are as close to 0 as possible
+            // if we get a perfect 0 that means we have the same wall with the same json data (only in simulation can this happen)
+            // if we have -1 then they are the oposite facing wall
+
+            //Debug.LogAssertion($"Main: {comparisonMain}, Second: {comparisonSecond}");
+
+            var newOldCompMain =  Math.Abs(mainWallLocation.Item2) - Math.Abs(comparisonMain); // new wall is closer to 0 than old wall
+            var newOldCompSecond = Math.Abs(secondaryWallLocation.Item2) - Math.Abs(comparisonSecond); // if new wall is bigger than old wall it gives negitive
+
+            //Debug.LogAssertion($"Main Comp: {newOldCompMain}, Second Comp: {newOldCompSecond}");
+
+
+            if ((comparisonMain < tune) && (comparisonMain > -tune) && (newOldCompMain > 0))
+            {
+                if (newOldCompMain > newOldCompSecond) // to reduce the chance that we return the same wall for both main and second 
+                    mainWallLocation = (index, comparisonMain);
+            }
+            if ((comparisonSecond < tune) && (comparisonSecond > -tune) && (newOldCompSecond > 0))
+            {
+                if (newOldCompSecond > newOldCompMain)
+                    secondaryWallLocation = (index, comparisonSecond);
+            }
+
+
+            index++;
+
+        }
+
+
+        return (mainWallLocation.Item1, secondaryWallLocation.Item1);
+
+        }
+
+
+
+    private void triangle(MRUKAnchor floor, MRUKAnchor mainWall, MRUKAnchor secondaryWall)
+    {
+        // get distances for triangle calc (its easer to get than angles)
+        var floorToMainWall = distance(floor.transform.position, mainWall.transform.position); // b
+        var floorToSecondWall = distance(floor.transform.position, secondaryWall.transform.position); // c
+        var wallToWall = distance(mainWall.transform.position, secondaryWall.transform.position); // a
+
+        // simple triangle angle maths 
+        var angleBetweenFloorMain = Math.Acos((sqr(floorToMainWall) + sqr(floorToSecondWall) - sqr(wallToWall)) / (2 * floorToMainWall * floorToSecondWall)); // A
+        var angleBetweenFloorSec = Math.Acos((sqr(wallToWall) + sqr(floorToSecondWall) - sqr(floorToMainWall)) / (2*wallToWall*floorToSecondWall)); // B
+        var angleBetweenWalls = Math.Acos((sqr(wallToWall) + sqr(floorToMainWall) - sqr(floorToSecondWall)) / (2*wallToWall*floorToMainWall)); // C
+
+        // rad to deg conversion
+        angleBetweenFloorMain *= (180 / Math.PI); 
+        angleBetweenFloorSec *= (180 / Math.PI);
+        angleBetweenWalls *= (180 / Math.PI);
+
+        string line1 = $"Angle b FloorMain: {angleBetweenFloorMain}, Angle b FloorSec: {angleBetweenFloorSec}, Angle b Walls: {angleBetweenWalls}";
+        string line2 = $"Distance b FloorMain: {floorToMainWall}, Distance b FloorSec: {floorToSecondWall}, Distance b Walls: {wallToWall}";
+
+        SpatialLogger.Instance.LogInfo(line1);
+        SpatialLogger.Instance.LogInfo(line2);
+        Debug.LogError(line1);
+        Debug.LogError(line2);
+
+        theta = currentRoom.FloorAnchor.transform.rotation.y - angleBetweenFloorMain;
+        Debug.LogError($"Adjust Angle: {theta}");
+    }
+
+
     private double distance(Vector3 a, Vector3 b)
     {
         float distance = 0;
-        distance = (b.x - a.x) * (b.x - a.x); // idk squaring is weird in C#
+        distance = (b.x - a.x) * (b.x - a.x); 
         distance += (b.y - a.y) * (b.y - a.y);
         distance += (b.z - a.z) * (b.z - a.z);
 
         return (Math.Sqrt(distance));
     }
 
-    private double sqr(double a)
+    private double sqr(double a) // idk squaring is weird in C#
     {
         return a*a;
     }
 
-    private Vector2 getWhereIAmInRoom()
-    {
-        // https://math.stackexchange.com/questions/100448/finding-location-of-a-point-on-2d-plane-given-the-distances-to-three-other-know
-        // https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
-        double x0;
-        double y0;
+    //private Vector2 getWhereIAmInRoom_Trilateration()
+    //{
+    //    // https://math.stackexchange.com/questions/100448/finding-location-of-a-point-on-2d-plane-given-the-distances-to-three-other-know
+    //    // https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
+    //    double x0;
+    //    double y0;
 
-        Vector2[] walls = new Vector2[currentRoom.WallAnchors.Count];
-        double[] walldistances = new double[currentRoom.WallAnchors.Count];
+    //    Vector2[] walls = new Vector2[currentRoom.WallAnchors.Count];
+    //    double[] walldistances = new double[currentRoom.WallAnchors.Count];
 
 
-        int index = 0; // for indexing foreach loops
-        // get the x,y,d for each datasource (we are ignoring z as it can be found with a simple lookup)
-        foreach (MRUKAnchor wall in currentRoom.WallAnchors)
-        {
-            walls[index] = new Vector2( wall.transform.position.x, wall.transform.position.z );
-            walldistances[index] = distance(wall.transform.position, Vector3.zero);
-            Debug.Log($"{walls[index].x},{walls[index].y},{distance(wall.transform.position, Vector3.zero)}");
-            index++;
-        }
+    //    int index = 0; // for indexing foreach loops
+    //    // get the x,y,d for each datasource (we are ignoring z as it can be found with a simple lookup)
+    //    foreach (MRUKAnchor wall in currentRoom.WallAnchors)
+    //    {
+    //        walls[index] = new Vector2( wall.transform.position.x, wall.transform.position.z );
+    //        walldistances[index] = distance(wall.transform.position, Vector3.zero);
+    //        Debug.Log($"{walls[index].x},{walls[index].y},{distance(wall.transform.position, Vector3.zero)}");
+    //        index++;
+    //    }
 
-        index = 0;
+    //    index = 0;
 
-        var A = (-2 * walls[0].x + 2 * walls[1].x);
-        var B = (-2 * walls[0].y + 2 * walls[1].y);
-        var C = sqr(walldistances[0]) - sqr(walldistances[1]) - sqr(walls[0].x) + sqr(walls[1].x) - sqr(walls[0].y) + sqr(walls[1].y);
+    //    var A = (-2 * walls[0].x + 2 * walls[1].x);
+    //    var B = (-2 * walls[0].y + 2 * walls[1].y);
+    //    var C = sqr(walldistances[0]) - sqr(walldistances[1]) - sqr(walls[0].x) + sqr(walls[1].x) - sqr(walls[0].y) + sqr(walls[1].y);
 
-        var D = (-2 * walls[1].x + 2 * walls[2].x);
-        var E = (-2 * walls[1].y + 2 * walls[2].y);
-        var F = sqr(walldistances[1]) - sqr(walldistances[2]) - sqr(walls[1].x) + sqr(walls[2].x) - sqr(walls[1].y) + sqr(walls[2].y);
+    //    var D = (-2 * walls[1].x + 2 * walls[2].x);
+    //    var E = (-2 * walls[1].y + 2 * walls[2].y);
+    //    var F = sqr(walldistances[1]) - sqr(walldistances[2]) - sqr(walls[1].x) + sqr(walls[2].x) - sqr(walls[1].y) + sqr(walls[2].y);
 
-        x0 = (C * E - F * B) / (E * A - B * D);
-        y0 = (C * D - A * F) / (B * D - A * E);
+    //    x0 = (C * E - F * B) / (E * A - B * D);
+    //    y0 = (C * D - A * F) / (B * D - A * E);
 
-        //var D = distance(walls[0],walls[1]); // written as |S1S2| in the link above
+    //    //var D = distance(walls[0],walls[1]); // written as |S1S2| in the link above
 
-        //var a = sqr(walldistances[0]) - sqr(walldistances[1]) + sqr(D);
-        //a /= 2 * D;
-        //var h = walldistances[0] - a;
+    //    //var a = sqr(walldistances[0]) - sqr(walldistances[1]) + sqr(D);
+    //    //a /= 2 * D;
+    //    //var h = walldistances[0] - a;
 
-        //x0 = walls[0].x + h * (walls[1].y - walls[0].y) / D;
-        //y0 = walls[0].y + h * (walls[1].x - walls[0].x) / D;
+    //    //x0 = walls[0].x + h * (walls[1].y - walls[0].y) / D;
+    //    //y0 = walls[0].y + h * (walls[1].x - walls[0].x) / D;
 
-        return new Vector2((float)x0, (float)y0);
-    }
+    //    return new Vector2((float)x0, (float)y0);
+    //}
 }
-
-
-// from scene debugger
-/// <summary>
-/// Exports the current scene data to a JSON file if the specified condition is met.
-/// </summary>
-/// <param name="isOn">If set to true, the scene data will be exported to JSON.</param>
-//public void ExportJSON(bool isOn)
-//{
-//    try
-//    {
-//        if (isOn)
-//        {
-//            bool exportGlobalMesh = true;
-//            if (exportGlobalMeshJSONDropdown)
-//            {
-//                exportGlobalMesh = exportGlobalMeshJSONDropdown.options[exportGlobalMeshJSONDropdown.value].text.ToLower() == "true";
-//            }
-//            var scene = MRUK.Instance.SaveSceneToJsonString(
-//            exportGlobalMesh
-//            );
-//            var filename = $"MRUK_Export_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.json";
-//            var path = Path.Combine(Application.persistentDataPath, filename);
-//            File.WriteAllText(path, scene);
-//            Debug.Log($"Saved Scene JSON to {path}");
-//        }
-//    }
-//    catch (Exception e)
-//    {
-//        SetLogsText("\n[{0}]\n {1}\n{2}",
-//            nameof(ExportJSON),
-//            e.Message,
-//            e.StackTrace
-//        );
-//    }
-//}

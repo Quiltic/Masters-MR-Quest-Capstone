@@ -56,6 +56,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5297812471942869853}
     m_Modifications:
+    - target: {fileID: 2493359062837013405, guid: df8c27c3d9845d446824db543eed5ff7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2493359062837013405, guid: df8c27c3d9845d446824db543eed5ff7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5068262726240870284, guid: df8c27c3d9845d446824db543eed5ff7, type: 3}
       propertyPath: m_Name
       value: Bouncy Ball
@@ -134,8 +142,8 @@ MonoBehaviour:
   _directChildren: []
   _networkRules: {fileID: 0}
   _visitiblityRules: {fileID: 0}
-  _syncPosition: 1
-  _syncRotation: 1
+  _syncPosition: 2
+  _syncRotation: 2
   _syncScale: 1
   _syncParent: 1
   _interpolateSettings: 7
@@ -201,6 +209,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Body
       objectReference: {fileID: 0}
+    - target: {fileID: 3467372489037831481, guid: 167a342f7e8ed0d47b04eb7cc5ece2a3, type: 3}
+      propertyPath: _syncPosition
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3467372489037831481, guid: 167a342f7e8ed0d47b04eb7cc5ece2a3, type: 3}
+      propertyPath: _syncRotation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6117588854171755090, guid: 167a342f7e8ed0d47b04eb7cc5ece2a3, type: 3}
+      propertyPath: _syncPosition
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6117588854171755090, guid: 167a342f7e8ed0d47b04eb7cc5ece2a3, type: 3}
+      propertyPath: _syncRotation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8954103733144834574, guid: 167a342f7e8ed0d47b04eb7cc5ece2a3, type: 3}
+      propertyPath: _syncPosition
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8954103733144834574, guid: 167a342f7e8ed0d47b04eb7cc5ece2a3, type: 3}
+      propertyPath: _syncRotation
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -219,6 +251,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5297812471942869853}
     m_Modifications:
+    - target: {fileID: 5882007347293688073, guid: 29a76091cd795134aaf8f194f7024b31, type: 3}
+      propertyPath: _syncPosition
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5882007347293688073, guid: 29a76091cd795134aaf8f194f7024b31, type: 3}
+      propertyPath: _syncRotation
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6287716212178198939, guid: 29a76091cd795134aaf8f194f7024b31, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

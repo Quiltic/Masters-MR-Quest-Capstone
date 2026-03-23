@@ -18,6 +18,7 @@ public class Cubert : MonoBehaviour
     {
         transform.position = ra.currentRoom.FloorAnchor.transform.position;
         transform.rotation = ra.currentRoom.FloorAnchor.transform.rotation;
+        transform.Rotate(0f, (float)ra.theta, 0f, Space.Self);
 
         // to possition the location of the host in realspace. idk if this will work
         //if (ra.currentRoom.FloorAnchor.transform.position != ra.roomDataReceived.roomFloorPosData) // for some reason the code never accepts isServer or isHost

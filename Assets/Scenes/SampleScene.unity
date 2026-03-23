@@ -14617,17 +14617,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomAlignment
   networkManager: {fileID: 729412181}
-  mruk: {fileID: 176029881}
-  headset: {fileID: 112252028}
-  currentRoom: {fileID: 0}
-  serverRoom:
-    roomFloorPosData: {x: 0, y: 0, z: 0}
-    roomFloorRotationData: {x: 0, y: 0, z: 0, w: 0}
+  dataToSend:
     jsonData: 
     whereIAmInRoom: {x: 0, y: 0}
     myRotationInRoom: {x: 0, y: 0, z: 0, w: 0}
-  whereAmIInRoom: {x: 0, y: 0}
+    roomFloorPosData: {x: 0, y: 0, z: 0}
+    mainWall:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    secondaryWall:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    roomFloorRotationData: {x: 0, y: 0, z: 0, w: 0}
+  roomDataReceived:
+    jsonData: 
+    whereIAmInRoom: {x: 0, y: 0}
+    myRotationInRoom: {x: 0, y: 0, z: 0, w: 0}
+    roomFloorPosData: {x: 0, y: 0, z: 0}
+    mainWall:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    secondaryWall:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    roomFloorRotationData: {x: 0, y: 0, z: 0, w: 0}
+  mruk: {fileID: 176029881}
+  headset: {fileID: 112252028}
+  currentRoom: {fileID: 0}
   blinder: {fileID: 1676081325}
+  theta: 0
 --- !u!4 &1009318747
 Transform:
   m_ObjectHideFlags: 0
@@ -23287,7 +23317,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: db1a92406039cbd46878e03b53b57771, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
