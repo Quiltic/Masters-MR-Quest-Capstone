@@ -8,12 +8,15 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class RoomAlignment : MonoBehaviour
 {
     public NetworkManager networkManager;
     public sendData dataToSend;
     public sendData roomDataReceived;
+
+    
 
     // headset data
     [SerializeField] public MRUK mruk;
@@ -28,7 +31,10 @@ public class RoomAlignment : MonoBehaviour
     // here to make people not look at the world before they load in (lazy but effective)
     public GameObject blinder;
 
-public double theta;
+    public double theta;
+
+    public PointSetRegistration pointSetRegistration;
+
     [System.Serializable]
 
     public struct sendData : IPackedAuto
@@ -48,6 +54,8 @@ public double theta;
         public Rect mainWall;
         public Rect secondaryWall;
         public Quaternion roomFloorRotationData;
+
+        public Vector3[] walls;
         
     }
 
@@ -120,6 +128,17 @@ public double theta;
         dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
         dataToSend.roomFloorRotationData = room.transform.rotation;
 
+
+        dataToSend.walls = new Vector3[room.WallAnchors.Count];
+        int i = 0;
+
+        foreach (var wall in room.WallAnchors)
+        {
+            dataToSend.walls[i] = wall.transform.position;
+            i++;
+        }
+
+
         //Debug.LogError(room.WallAnchors[0].PlaneRect.Value); // gives x,y,width,height
         //Debug.LogError(room.WallAnchors[0].transform.position); // gives position... probably in testing it doesent give that so
 
@@ -162,12 +181,21 @@ public double theta;
 
         // This is where the magic happens
 
+        //if ( player != PlayerID.Server ) {
         (int,int) loc = getMainSecondaryWalls(data.mainWall, data.secondaryWall);
 
-        triangle(currentRoom.FloorAnchor, currentRoom.WallAnchors[loc.Item1], currentRoom.WallAnchors[loc.Item2]);
+        triangle(currentRoom.FloorAnchor.transform.position,
+            currentRoom.WallAnchors[loc.Item1].transform.position,
+            currentRoom.WallAnchors[loc.Item2].transform.position);
+
+        //triangle(headset.transform.position,
+        //    currentRoom.FloorAnchor.transform.position,
+        //    currentRoom.WallAnchors[loc.Item1].transform.position);
 
 
         Debug.Log($"Wall locations in array: {loc}");
+
+        //Debug.Log(pointSetRegistration.RunICP(dataToSend.walls, data.walls, 50, 1e-5f)); 
 
 
 
@@ -199,6 +227,7 @@ public double theta;
         {
             SpatialLogger.Instance.LogInfo($"I Connected");
             Debug.Log($"I Connected");
+            networkManager.SendToServer(dataToSend);
         }
 
     }
@@ -281,12 +310,12 @@ public double theta;
 
 
 
-    private void triangle(MRUKAnchor floor, MRUKAnchor mainWall, MRUKAnchor secondaryWall)
+    private void triangle(Vector3 floor, Vector3 mainWall, Vector3 secondaryWall)
     {
         // get distances for triangle calc (its easer to get than angles)
-        var floorToMainWall = distance(floor.transform.position, mainWall.transform.position); // b
-        var floorToSecondWall = distance(floor.transform.position, secondaryWall.transform.position); // c
-        var wallToWall = distance(mainWall.transform.position, secondaryWall.transform.position); // a
+        var floorToMainWall = distance(floor, mainWall); // b
+        var floorToSecondWall = distance(floor, secondaryWall); // c
+        var wallToWall = distance(mainWall, secondaryWall); // a
 
         // simple triangle angle maths 
         var angleBetweenFloorMain = Math.Acos((sqr(floorToMainWall) + sqr(floorToSecondWall) - sqr(wallToWall)) / (2 * floorToMainWall * floorToSecondWall)); // A
@@ -301,13 +330,14 @@ public double theta;
         string line1 = $"Angle b FloorMain: {angleBetweenFloorMain}, Angle b FloorSec: {angleBetweenFloorSec}, Angle b Walls: {angleBetweenWalls}";
         string line2 = $"Distance b FloorMain: {floorToMainWall}, Distance b FloorSec: {floorToSecondWall}, Distance b Walls: {wallToWall}";
 
-        SpatialLogger.Instance.LogInfo(line1);
-        SpatialLogger.Instance.LogInfo(line2);
+        //SpatialLogger.Instance.LogInfo(line1);
+        //SpatialLogger.Instance.LogInfo(line2);
         Debug.LogError(line1);
         Debug.LogError(line2);
 
-        theta = currentRoom.FloorAnchor.transform.rotation.y - angleBetweenFloorMain;
+        theta += currentRoom.FloorAnchor.transform.rotation.y - angleBetweenFloorMain;
         Debug.LogError($"Adjust Angle: {theta}");
+        SpatialLogger.Instance.LogInfo($"Adjust Angle: {theta}");
     }
 
 

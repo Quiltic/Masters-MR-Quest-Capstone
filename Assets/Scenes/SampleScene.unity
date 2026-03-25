@@ -3073,6 +3073,7 @@ GameObject:
   - component: {fileID: 249788070}
   - component: {fileID: 249788069}
   - component: {fileID: 249788076}
+  - component: {fileID: 249788077}
   m_Layer: 0
   m_Name: '[BuildingBlock] Cube'
   m_TagString: Untagged
@@ -3273,6 +3274,28 @@ MonoBehaviour:
   _characterControllerPatch: 0
   _ownerAuth: 1
   _interpolationTiming: 0
+--- !u!114 &249788077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249788068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 562d79c4461fb9840a3d595519c4e3bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TransferOwnership
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  UseGravity: 0
 --- !u!1 &251538455
 GameObject:
   m_ObjectHideFlags: 0
@@ -14597,6 +14620,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1009318747}
   - component: {fileID: 1009318746}
+  - component: {fileID: 1009318748}
   m_Layer: 0
   m_Name: RoomAlignment
   m_TagString: Untagged
@@ -14635,6 +14659,7 @@ MonoBehaviour:
       width: 0
       height: 0
     roomFloorRotationData: {x: 0, y: 0, z: 0, w: 0}
+    walls: []
   roomDataReceived:
     jsonData: 
     whereIAmInRoom: {x: 0, y: 0}
@@ -14653,11 +14678,13 @@ MonoBehaviour:
       width: 0
       height: 0
     roomFloorRotationData: {x: 0, y: 0, z: 0, w: 0}
+    walls: []
   mruk: {fileID: 176029881}
   headset: {fileID: 112252028}
   currentRoom: {fileID: 0}
   blinder: {fileID: 1676081325}
   theta: 0
+  pointSetRegistration: {fileID: 1009318748}
 --- !u!4 &1009318747
 Transform:
   m_ObjectHideFlags: 0
@@ -14673,6 +14700,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1009318748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009318745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45d565344f6ec24f88780ba1256ac10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PointSetRegistration
+  sourcePoints: []
+  targetPoints: []
+  maxIterations: 50
+  tolerance: 0.00001
 --- !u!1 &1026669638
 GameObject:
   m_ObjectHideFlags: 0
@@ -21845,10 +21888,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.SceneJsons.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: 'SceneSettings.SceneJsons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4900000, guid: d59a243c8dddc8644a69a0662ee99423, type: 3}
+    - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
+      propertyPath: 'SceneSettings.SceneJsons.Array.data[1]'
       value: 
       objectReference: {fileID: 4900000, guid: 95fec6039495c8a4985865e7f4e0c429, type: 3}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}

@@ -1,0 +1,128 @@
+using System;
+using System.Numerics; // For Vector3 and Matrix4x4
+
+class PointSetRegistration
+{
+    /// <summary>
+    /// Computes the rigid (rotation + translation + optional scale) transformation
+    /// that aligns source points to target points using Umeyama's method.
+    /// </summary>
+    public static void Register(Vector3[] source, Vector3[] target, bool estimateScale,
+                                 out Matrix4x4 transform)
+    {
+        if (source == null || target == null || source.Length != target.Length || source.Length < 3)
+            throw new ArgumentException("Point sets must be non-null, same length, and have at least 3 points.");
+
+        int n = source.Length;
+
+        // Compute centroids
+        Vector3 centroidSrc = Vector3.Zero;
+        Vector3 centroidTgt = Vector3.Zero;
+        for (int i = 0; i < n; i++)
+        {
+            centroidSrc += source[i];
+            centroidTgt += target[i];
+        }
+        centroidSrc /= n;
+        centroidTgt /= n;
+
+        // Subtract centroids
+        Vector3[] srcCentered = new Vector3[n];
+        Vector3[] tgtCentered = new Vector3[n];
+        for (int i = 0; i < n; i++)
+        {
+            srcCentered[i] = source[i] - centroidSrc;
+            tgtCentered[i] = target[i] - centroidTgt;
+        }
+
+        // Compute covariance matrix
+        double[,] cov = new double[3, 3];
+        for (int i = 0; i < n; i++)
+        {
+            cov[0, 0] += srcCentered[i].X * tgtCentered[i].X;
+            cov[0, 1] += srcCentered[i].X * tgtCentered[i].Y;
+            cov[0, 2] += srcCentered[i].X * tgtCentered[i].Z;
+
+            cov[1, 0] += srcCentered[i].Y * tgtCentered[i].X;
+            cov[1, 1] += srcCentered[i].Y * tgtCentered[i].Y;
+            cov[1, 2] += srcCentered[i].Y * tgtCentered[i].Z;
+
+            cov[2, 0] += srcCentered[i].Z * tgtCentered[i].X;
+            cov[2, 1] += srcCentered[i].Z * tgtCentered[i].Y;
+            cov[2, 2] += srcCentered[i].Z * tgtCentered[i].Z;
+        }
+
+        // Perform SVD on covariance matrix ( singular value decomposition )
+        var svd = MathNet.Numerics.LinearAlgebra.Double.Matrix.Build.DenseOfArray(cov).Svd();
+        var U = svd.U;
+        var Vt = svd.VT;
+
+        // Compute rotation
+        var Rmat = U * Vt;
+        if (Rmat.Determinant() < 0)
+        {
+            // Reflection case: fix it
+            var diag = MathNet.Numerics.LinearAlgebra.Double.Matrix.Build.DenseIdentity(3);
+            diag[2, 2] = -1;
+            Rmat = U * diag * Vt;
+        }
+
+        // Convert rotation to Matrix4x4
+        Matrix4x4 rotation = new Matrix4x4(
+            (float)Rmat[0, 0], (float)Rmat[0, 1], (float)Rmat[0, 2], 0,
+            (float)Rmat[1, 0], (float)Rmat[1, 1], (float)Rmat[1, 2], 0,
+            (float)Rmat[2, 0], (float)Rmat[2, 1], (float)Rmat[2, 2], 0,
+            0, 0, 0, 1
+        );
+
+        // Compute scale
+        float scale = 1f;
+        if (estimateScale)
+        {
+            double varSrc = 0;
+            for (int i = 0; i < n; i++)
+                varSrc += srcCentered[i].LengthSquared();
+            varSrc /= n;
+
+            double trace = 0;
+            for (int i = 0; i < 3; i++)
+                trace += Rmat.Row(i).DotProduct(svd.S.Row(i));
+
+            scale = (float)(trace / varSrc);
+        }
+
+        // Compute translation
+        Vector3 translation = centroidTgt - Vector3.Transform(centroidSrc * scale, rotation);
+
+        // Final transformation matrix
+        transform = rotation;
+        transform.M11 *= scale; transform.M12 *= scale; transform.M13 *= scale;
+        transform.M21 *= scale; transform.M22 *= scale; transform.M23 *= scale;
+        transform.M31 *= scale; transform.M32 *= scale; transform.M33 *= scale;
+        transform.Translation = translation;
+    }
+
+    static void Main()
+    {
+        // Example: Align a rotated + translated cube to original
+        Vector3[] source = {
+            new Vector3(0,0,0), new Vector3(1,0,0), new Vector3(1,1,0),
+            new Vector3(0,1,0), new Vector3(0,0,1), new Vector3(1,0,1),
+            new Vector3(1,1,1), new Vector3(0,1,1)
+        };
+
+        // Apply known transformation: rotate 45° around Z, translate (2,3,1)
+        float angle = (float)(Math.PI / 4);
+        Matrix4x4 rotZ = Matrix4x4.CreateRotationZ(angle);
+        Vector3 trans = new Vector3(2, 3, 1);
+        Vector3[] target = new Vector3[source.Length];
+        for (int i = 0; i < source.Length; i++)
+            target[i] = Vector3.Transform(source[i], rotZ) + trans;
+
+        // Recover transformation
+        Register(source, target, false, out Matrix4x4 estimated);
+
+        Console.WriteLine("Estimated Transformation Matrix:");
+        Console.WriteLine(estimated);
+    }
+}
