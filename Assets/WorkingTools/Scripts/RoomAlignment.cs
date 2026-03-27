@@ -31,7 +31,19 @@ public class RoomAlignment : MonoBehaviour
     // here to make people not look at the world before they load in (lazy but effective)
     public GameObject blinder;
 
+
+    // *******************************
+    // this is the angle we care about
+    // *******************************
+
     public double theta;
+
+
+
+
+
+
+
 
     public PointSetRegistration pointSetRegistration;
 
@@ -76,14 +88,14 @@ public class RoomAlignment : MonoBehaviour
 
         // Connect listeners
 
-        networkManager.Subscribe<sendData>(gotData); // for data
+        networkManager.Subscribe<sendData>(GotData); // for data
         mruk.RoomCreatedEvent.AddListener(BindRoomInfo);
 
         //NetworkManager.onAnyClientConnectionState += BindRoomInfo;
 
         // for server, check if someone joined, Client does not need this
         //if (networkManager.isServer || networkManager.isHost)
-        networkManager.onPlayerJoined += someoneJoined;
+        networkManager.onPlayerJoined += SomeoneJoined;
     }
 
     private void OnDisable()
@@ -92,11 +104,11 @@ public class RoomAlignment : MonoBehaviour
 
         // for data send/receive between server and client
         if (networkManager)
-            networkManager.Unsubscribe<sendData>(gotData);
+            networkManager.Unsubscribe<sendData>(GotData);
 
         // for checking if someone joined
         if (networkManager.isServer)
-            networkManager.onPlayerJoined -= someoneJoined;
+            networkManager.onPlayerJoined -= SomeoneJoined;
 
 
         mruk.RoomCreatedEvent.RemoveListener(BindRoomInfo);
@@ -173,7 +185,7 @@ public class RoomAlignment : MonoBehaviour
 
     }
 
-    private void gotData(PlayerID player, sendData data, bool asServer)
+    private void GotData(PlayerID player, sendData data, bool asServer)
     {
         Debug.Log($"Recieved Data From: {player}");
         SpatialLogger.Instance.LogInfo($"Recieved Data From: {player}");
@@ -181,12 +193,23 @@ public class RoomAlignment : MonoBehaviour
 
         // This is where the magic happens
 
-        //if ( player != PlayerID.Server ) {
-        (int,int) loc = getMainSecondaryWalls(data.mainWall, data.secondaryWall);
+        // get the same walls for both headsets
+        (int,int) loc = GetMainSecondaryWalls(data.mainWall, data.secondaryWall);
 
-        triangle(currentRoom.FloorAnchor.transform.position,
-            currentRoom.WallAnchors[loc.Item1].transform.position,
-            currentRoom.WallAnchors[loc.Item2].transform.position);
+        // make the center of the room the center of the universe
+        Vector2 correctedWall = new Vector2(currentRoom.WallAnchors[loc.Item1].transform.position.x, currentRoom.WallAnchors[loc.Item1].transform.position.z); // y is up/down
+        correctedWall.x -= currentRoom.FloorAnchor.transform.position.x;
+        correctedWall.y -= currentRoom.FloorAnchor.transform.position.z;
+
+        // get phi
+        var phi = Math.Atan(correctedWall.y / correctedWall.x) * Mathf.Rad2Deg; // returns a radian, we need degrees
+
+        // set true "north" (updated for starting angle)
+        theta = currentRoom.FloorAnchor.transform.eulerAngles.y + phi;
+
+        //triangle(currentRoom.FloorAnchor.transform.position,
+        //    currentRoom.WallAnchors[loc.Item1].transform.position,
+        //    currentRoom.WallAnchors[loc.Item2].transform.position);
 
         //triangle(headset.transform.position,
         //    currentRoom.FloorAnchor.transform.position,
@@ -194,6 +217,9 @@ public class RoomAlignment : MonoBehaviour
 
 
         Debug.Log($"Wall locations in array: {loc}");
+
+        SpatialLogger.Instance.LogInfo($"Phi {phi} /|\\ Theta: {theta}");
+        Debug.Log($"Phi {phi} /|\\ Theta: {theta}");
 
         //Debug.Log(pointSetRegistration.RunICP(dataToSend.walls, data.walls, 50, 1e-5f)); 
 
@@ -207,14 +233,14 @@ public class RoomAlignment : MonoBehaviour
 
     }
 
-    private void someoneJoined(PlayerID player, bool isReconnect, bool asServer)
+    private void SomeoneJoined(PlayerID player, bool isReconnect, bool asServer)
     {
         blinder.SetActive(false); // show that you loaded in. If your the server you will have already done this.
 
         if (networkManager.isServer || networkManager.isHost)
         {
-            SpatialLogger.Instance.LogInfo($"Player '{player}' Connected");
-            Debug.Log($"Player '{player}' Connected");
+            SpatialLogger.Instance.LogInfo($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
+            Debug.Log($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
 
 
             if (!SceneAndRoomInfoAvailable) // this is very bad if it hits
@@ -227,7 +253,7 @@ public class RoomAlignment : MonoBehaviour
         {
             SpatialLogger.Instance.LogInfo($"I Connected");
             Debug.Log($"I Connected");
-            networkManager.SendToServer(dataToSend);
+            //networkManager.SendToServer(dataToSend);
         }
 
     }
@@ -244,7 +270,7 @@ public class RoomAlignment : MonoBehaviour
 
 
 
-    private (int, int) getMainSecondaryWalls(Rect mainWall, Rect secondaryWall)
+    private (int, int) GetMainSecondaryWalls(Rect mainWall, Rect secondaryWall)
     {
         // The locations for where the 2 walls are most likly are in this rooms array
         // we need this as the meshes dont line up perfectly or are garenteed to be ordered the same
@@ -310,17 +336,17 @@ public class RoomAlignment : MonoBehaviour
 
 
 
-    private void triangle(Vector3 floor, Vector3 mainWall, Vector3 secondaryWall)
+    private void Triangle(Vector3 floor, Vector3 mainWall, Vector3 secondaryWall)
     {
         // get distances for triangle calc (its easer to get than angles)
-        var floorToMainWall = distance(floor, mainWall); // b
-        var floorToSecondWall = distance(floor, secondaryWall); // c
-        var wallToWall = distance(mainWall, secondaryWall); // a
+        var floorToMainWall = Distance(floor, mainWall); // b
+        var floorToSecondWall = Distance(floor, secondaryWall); // c
+        var wallToWall = Distance(mainWall, secondaryWall); // a
 
         // simple triangle angle maths 
-        var angleBetweenFloorMain = Math.Acos((sqr(floorToMainWall) + sqr(floorToSecondWall) - sqr(wallToWall)) / (2 * floorToMainWall * floorToSecondWall)); // A
-        var angleBetweenFloorSec = Math.Acos((sqr(wallToWall) + sqr(floorToSecondWall) - sqr(floorToMainWall)) / (2*wallToWall*floorToSecondWall)); // B
-        var angleBetweenWalls = Math.Acos((sqr(wallToWall) + sqr(floorToMainWall) - sqr(floorToSecondWall)) / (2*wallToWall*floorToMainWall)); // C
+        var angleBetweenFloorMain = Math.Acos((Sqr(floorToMainWall) + Sqr(floorToSecondWall) - Sqr(wallToWall)) / (2 * floorToMainWall * floorToSecondWall)); // A
+        var angleBetweenFloorSec = Math.Acos((Sqr(wallToWall) + Sqr(floorToSecondWall) - Sqr(floorToMainWall)) / (2*wallToWall*floorToSecondWall)); // B
+        var angleBetweenWalls = Math.Acos((Sqr(wallToWall) + Sqr(floorToMainWall) - Sqr(floorToSecondWall)) / (2*wallToWall*floorToMainWall)); // C
 
         // rad to deg conversion
         angleBetweenFloorMain *= (180 / Math.PI); 
@@ -341,7 +367,7 @@ public class RoomAlignment : MonoBehaviour
     }
 
 
-    private double distance(Vector3 a, Vector3 b)
+    private double Distance(Vector3 a, Vector3 b)
     {
         float distance = 0;
         distance = (b.x - a.x) * (b.x - a.x); 
@@ -351,12 +377,12 @@ public class RoomAlignment : MonoBehaviour
         return (Math.Sqrt(distance));
     }
 
-    private double sqr(double a) // idk squaring is weird in C#
+    private double Sqr(double a) // idk squaring is weird in C#
     {
         return a*a;
     }
 
-    //private Vector2 getWhereIAmInRoom_Trilateration()
+    //private Vector2 GetWhereIAmInRoom_Trilateration()
     //{
     //    // https://math.stackexchange.com/questions/100448/finding-location-of-a-point-on-2d-plane-given-the-distances-to-three-other-know
     //    // https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
