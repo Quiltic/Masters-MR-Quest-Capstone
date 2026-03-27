@@ -39,7 +39,7 @@ public class RoomAlignment : MonoBehaviour
     public double theta;
 
 
-
+    private PlayerID sendToPlayer;
 
 
 
@@ -84,7 +84,6 @@ public class RoomAlignment : MonoBehaviour
         //Debug.Log($"ClientP: {distance(ClientP, Vector3.zero)}"); // 1.837
         //Debug.Log($"HostR: {new Quaternion(0.44f,-0.54f,-0.54f,-0.44f).eulerAngles}"); // 270,101.65
         //Debug.Log($"ClientR: {new Quaternion(-0.53f, -0.47f, -0.47f, 0.53f).eulerAngles}"); // 270, 276.87
-
 
         // Connect listeners
 
@@ -150,7 +149,7 @@ public class RoomAlignment : MonoBehaviour
             i++;
         }
 
-
+        networkManager.Send(sendToPlayer, dataToSend);
         //Debug.LogError(room.WallAnchors[0].PlaneRect.Value); // gives x,y,width,height
         //Debug.LogError(room.WallAnchors[0].transform.position); // gives position... probably in testing it doesent give that so
 
@@ -159,7 +158,7 @@ public class RoomAlignment : MonoBehaviour
 
         //triangle(room.FloorAnchor, room.WallAnchors[0], room.WallAnchors[1]); // idk what to do with this yet
 
-        
+
 
 
 
@@ -187,6 +186,11 @@ public class RoomAlignment : MonoBehaviour
 
     private void GotData(PlayerID player, sendData data, bool asServer)
     {
+        //mruk.enabled = true;
+        //if (player != sendToPlayer)
+        //{
+        //    mruk.LoadSceneFromJsonString(dataToSend.jsonData);
+        //}
         Debug.Log($"Recieved Data From: {player}");
         SpatialLogger.Instance.LogInfo($"Recieved Data From: {player}");
         roomDataReceived = data;
@@ -205,7 +209,7 @@ public class RoomAlignment : MonoBehaviour
         var phi = Math.Atan(correctedWall.y / correctedWall.x) * Mathf.Rad2Deg; // returns a radian, we need degrees
 
         // set true "north" (updated for starting angle)
-        theta = currentRoom.FloorAnchor.transform.eulerAngles.y + phi;
+        theta = phi; // + currentRoom.FloorAnchor.transform.eulerAngles.y;
 
         //triangle(currentRoom.FloorAnchor.transform.position,
         //    currentRoom.WallAnchors[loc.Item1].transform.position,
@@ -235,10 +239,14 @@ public class RoomAlignment : MonoBehaviour
 
     private void SomeoneJoined(PlayerID player, bool isReconnect, bool asServer)
     {
+        
         blinder.SetActive(false); // show that you loaded in. If your the server you will have already done this.
 
         if (networkManager.isServer || networkManager.isHost)
         {
+            
+            //mruk.SceneSettings.DataSource = MRUK.SceneDataSource.DeviceWithJsonFallback;
+            //mruk.enabled = true;
             SpatialLogger.Instance.LogInfo($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
             Debug.Log($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
 
@@ -246,11 +254,13 @@ public class RoomAlignment : MonoBehaviour
             if (!SceneAndRoomInfoAvailable) // this is very bad if it hits
                 dataToSend.jsonData = "No room data found.";
 
-            networkManager.Send(player, dataToSend);
+            sendToPlayer = player;
+            networkManager.Send(sendToPlayer, dataToSend);
         }
 
         else if (networkManager.isClientOnly) // letting you know that you connected to the server
         {
+            //mruk.SceneSettings.DataSource = MRUK.SceneDataSource.Json;
             SpatialLogger.Instance.LogInfo($"I Connected");
             Debug.Log($"I Connected");
             //networkManager.SendToServer(dataToSend);
