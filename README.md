@@ -30,7 +30,7 @@ Basic Scene setup from:  https://www.youtube.com/watch?v=3sVgwPxR4TE
 
 P2P:                     https://codedimmersions.gitbook.io/mirrorvr/manual/getting-started
 
-&nbsp;                        https://purrnet.gitbook.io/docs/getting-started/getting-started
+                         https://purrnet.gitbook.io/docs/getting-started/getting-started
 
     (p2p for meta is depreciated as of 2023)
 
@@ -43,4 +43,49 @@ P2P:                     https://codedimmersions.gitbook.io/mirrorvr/manual/gett
 \# Fix the simulator
 
 Under Preferences go to Meta XR Simulator and select version 78 from the available versions. All higher versions crash.
+
+
+
+
+
+\# Problems
+
+* Headsets save the room information differently, with different wall orders and furniture identities (such as one being called a table vs one being a thing)
+
+  * saved room info has different orientation
+* when a headset starts it sets itself as the center of the universe (0,0,0 looking "north")
+* rooms are moved based on real world trackers and estimation of location in headset for real world
+
+  * this movement (rotation/translation) is different per headset and different per saved room
+* cannot send the entire room info from one person to another
+
+  * they be too big
+  * even exported json is too large for complex rooms
+
+
+
+
+
+\# Methodologies tried
+
+* Trilateration
+
+  * making a circle from 3 points to determine aproximite location
+  * Failed because each headset thinks they are at 0,0,0 (so it always returns that)
+  * https://math.stackexchange.com/questions/100448/finding-location-of-a-point-on-2d-plane-given-the-distances-to-three-other-know
+  * https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
+* Point set registration with SVD
+
+  * Finds rotation and position approximation between two different datasets (can fill in holes)
+  * Failed (some rooms are mirrored, and since headsets dont save direction the same we can get flipped or rotated locations)
+
+    * Still not perfect
+* Triangle Method
+
+  * Make a known direction with a triangle between floor and 2 walls
+  * Failed (mystery bullshit)
+* Direct angles
+
+  * Get a known direction to a known wall and then set all local spaces to the same position and rotation
+  * Failed (idk why)
 

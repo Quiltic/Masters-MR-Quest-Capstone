@@ -17,7 +17,7 @@ public class Cubert : MonoBehaviour
     void Start()
     {
         transform.position = ra.currentRoom.FloorAnchor.transform.position;
-        //transform.rotation = ra.currentRoom.FloorAnchor.transform.rotation;
+        //transform.eulerAngles = new Vector3(0,ra.currentRoom.FloorAnchor.transform.eulerAngles.y,0);
         transform.Rotate(0f, (float)ra.theta, 0f, Space.Self);
 
         // to possition the location of the host in realspace. idk if this will work

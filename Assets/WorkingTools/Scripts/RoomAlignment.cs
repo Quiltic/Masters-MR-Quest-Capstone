@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
-using static Unity.VisualScripting.Member;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class RoomAlignment : MonoBehaviour
 {
@@ -43,10 +43,6 @@ public class RoomAlignment : MonoBehaviour
 
 
 
-
-
-    public PointSetRegistration pointSetRegistration;
-
     [System.Serializable]
 
     public struct sendData : IPackedAuto
@@ -54,18 +50,18 @@ public class RoomAlignment : MonoBehaviour
 
         //public GameObject chosenWall;
         
-        public string jsonData; // the full json for room data
+        //public string jsonData; // the full json for room data
 
-        public Vector2 whereIAmInRoom;
-        public Quaternion myRotationInRoom; // which i have no idea how to get yet but we are working on it.
+        //public Vector2 whereIAmInRoom;
+        //public Quaternion myRotationInRoom; // which i have no idea how to get yet but we are working on it.
 
         // used for ground truth position and to calculate rotation
         public Vector3 roomFloorPosData;
 
-        // the following is used to get ground truth rotation
-        public Rect mainWall;
-        public Rect secondaryWall;
-        public Quaternion roomFloorRotationData;
+        //// the following is used to get ground truth rotation
+        //public Rect mainWall;
+        //public Rect secondaryWall;
+        //public Quaternion roomFloorRotationData;
 
         public Vector3[] walls;
         
@@ -124,8 +120,17 @@ public class RoomAlignment : MonoBehaviour
     {
         currentRoom = room; // for self
 
-        dataToSend.jsonData = MRUK.Instance.SaveSceneToJsonString( true );
-        SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room was bound to {nameof(room)}.");
+        //try
+        //{
+        //    dataToSend.jsonData = MRUK.Instance.SaveSceneToJsonString(true);
+        //}
+        //catch (Exception e) {
+        //    Debug.LogError($"ERROR IN JSON: {e}");
+        //    SpatialLogger.Instance.LogError($"ERROR IN JSON: {e}");
+        //}
+        
+        
+        SpatialLogger.Instance.LogInfo($"{nameof(MRUKDemo)} room was bound to {nameof(room)}."); 
 
         /* The below idea is to make a triangle from the floor and the first 2 rooms in a list.
          * We pretend that the angle from the floor to the first wall is the ground truth rotation
@@ -133,11 +138,11 @@ public class RoomAlignment : MonoBehaviour
          */
 
         // set walls data
-        dataToSend.mainWall = room.WallAnchors[0].PlaneRect.Value;
-        dataToSend.secondaryWall = room.WallAnchors[1].PlaneRect.Value;
+        //dataToSend.mainWall = room.WallAnchors[0].PlaneRect.Value;
+        //dataToSend.secondaryWall = room.WallAnchors[1].PlaneRect.Value;
 
-        dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
-        dataToSend.roomFloorRotationData = room.transform.rotation;
+        //dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
+        //dataToSend.roomFloorRotationData = room.transform.rotation;
 
 
         dataToSend.walls = new Vector3[room.WallAnchors.Count];
@@ -149,7 +154,7 @@ public class RoomAlignment : MonoBehaviour
             i++;
         }
 
-        networkManager.Send(sendToPlayer, dataToSend);
+        //networkManager.Send(sendToPlayer, dataToSend);
         //Debug.LogError(room.WallAnchors[0].PlaneRect.Value); // gives x,y,width,height
         //Debug.LogError(room.WallAnchors[0].transform.position); // gives position... probably in testing it doesent give that so
 
@@ -185,54 +190,71 @@ public class RoomAlignment : MonoBehaviour
     }
 
     private void GotData(PlayerID player, sendData data, bool asServer)
-    {
-        //mruk.enabled = true;
-        //if (player != sendToPlayer)
-        //{
-        //    mruk.LoadSceneFromJsonString(dataToSend.jsonData);
-        //}
-        Debug.Log($"Recieved Data From: {player}");
-        SpatialLogger.Instance.LogInfo($"Recieved Data From: {player}");
-        roomDataReceived = data;
+    {       
+        
+        try {
+            //mruk.enabled = true;
+            //if (player != sendToPlayer)
+            //{
+            //    mruk.LoadSceneFromJsonString(dataToSend.jsonData);
+            //}
+            Debug.Log($"Recieved Data From: {player}");
+            SpatialLogger.Instance.LogInfo($"Recieved Data From: {player}");
+            roomDataReceived = data;
 
-        // This is where the magic happens
+            // This is where the magic happens
 
-        // get the same walls for both headsets
-        (int,int) loc = GetMainSecondaryWalls(data.mainWall, data.secondaryWall);
+            // get the same walls for both headsets
+            //(int, int) loc = GetMainSecondaryWalls(data.mainWall, data.secondaryWall);
 
-        // make the center of the room the center of the universe
-        Vector2 correctedWall = new Vector2(currentRoom.WallAnchors[loc.Item1].transform.position.x, currentRoom.WallAnchors[loc.Item1].transform.position.z); // y is up/down
-        correctedWall.x -= currentRoom.FloorAnchor.transform.position.x;
-        correctedWall.y -= currentRoom.FloorAnchor.transform.position.z;
+            // make the center of the room the center of the universe
+            //Vector2 correctedWall = new Vector2(currentRoom.WallAnchors[loc.Item1].transform.position.x, currentRoom.WallAnchors[loc.Item1].transform.position.z); // y is up/down
+            //correctedWall.x -= currentRoom.FloorAnchor.transform.position.x;
+            //correctedWall.y -= currentRoom.FloorAnchor.transform.position.z;
 
-        // get phi
-        var phi = Math.Atan(correctedWall.y / correctedWall.x) * Mathf.Rad2Deg; // returns a radian, we need degrees
+            // get phi
+            //var phi = Math.Atan(correctedWall.y / correctedWall.x) * Mathf.Rad2Deg; // returns a radian, we need degrees
 
-        // set true "north" (updated for starting angle)
-        theta = phi; // + currentRoom.FloorAnchor.transform.eulerAngles.y;
+            // set true "north" (updated for starting angle)
+            theta = currentRoom.FloorAnchor.transform.eulerAngles.y;
 
-        //triangle(currentRoom.FloorAnchor.transform.position,
-        //    currentRoom.WallAnchors[loc.Item1].transform.position,
-        //    currentRoom.WallAnchors[loc.Item2].transform.position);
+            //triangle(currentRoom.FloorAnchor.transform.position,
+            //    currentRoom.WallAnchors[loc.Item1].transform.position,
+            //    currentRoom.WallAnchors[loc.Item2].transform.position);
 
-        //triangle(headset.transform.position,
-        //    currentRoom.FloorAnchor.transform.position,
-        //    currentRoom.WallAnchors[loc.Item1].transform.position);
-
-
-        Debug.Log($"Wall locations in array: {loc}");
-
-        SpatialLogger.Instance.LogInfo($"Phi {phi} /|\\ Theta: {theta}");
-        Debug.Log($"Phi {phi} /|\\ Theta: {theta}");
-
-        //Debug.Log(pointSetRegistration.RunICP(dataToSend.walls, data.walls, 50, 1e-5f)); 
+            //triangle(headset.transform.position,
+            //    currentRoom.FloorAnchor.transform.position,
+            //    currentRoom.WallAnchors[loc.Item1].transform.position);
 
 
+            //Debug.Log($"Wall locations in array: {loc}");
 
-        //double HostDistance = distance(data.roomFloorPosData, Vector3.zero); // (a)
-        //double ClientDistance = distance(currentRoom.FloorAnchor.transform.position, Vector3.zero); // (b)
+            //SpatialLogger.Instance.LogInfo($"Phi {phi} /|\\ Theta: {theta}");
+            //Debug.Log($"Phi {phi} /|\\ Theta: {theta}");
 
-        //double Rotation = currentRoom.transform.rotation.eulerAngles.y; // (angle B)
+            if (PointSetRegisration.EstimateRotation(dataToSend.walls, data.walls, out Quaternion rot))
+            {
+                //Debug.Log(pointSetRegistration.RunICP(dataToSend.walls, data.walls, 50, 1e-5f));
+                theta = rot.y;
+                Debug.Log($"PSR Rotation {rot.eulerAngles}");
+                SpatialLogger.Instance.LogInfo($"PSR Rotation {rot.eulerAngles}");
+            }
+
+
+
+
+            //double HostDistance = distance(data.roomFloorPosData, Vector3.zero); // (a)
+            //double ClientDistance = distance(currentRoom.FloorAnchor.transform.position, Vector3.zero); // (b)
+
+            //double Rotation = currentRoom.transform.rotation.eulerAngles.y; // (angle B)
+
+        }
+
+        catch (Exception e) {
+            Debug.LogError($"ERROR IN GETDATA: {e}");
+            SpatialLogger.Instance.LogError($"ERROR IN GETDATA: {e}");
+        }
+        
 
 
     }
@@ -241,30 +263,38 @@ public class RoomAlignment : MonoBehaviour
     {
         
         blinder.SetActive(false); // show that you loaded in. If your the server you will have already done this.
-
-        if (networkManager.isServer || networkManager.isHost)
+        try
         {
-            
-            //mruk.SceneSettings.DataSource = MRUK.SceneDataSource.DeviceWithJsonFallback;
-            //mruk.enabled = true;
-            SpatialLogger.Instance.LogInfo($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
-            Debug.Log($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
+            if (networkManager.isServer || networkManager.isHost)
+            {
+
+                //mruk.SceneSettings.DataSource = MRUK.SceneDataSource.DeviceWithJsonFallback;
+                //mruk.enabled = true;
+                SpatialLogger.Instance.LogInfo($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
+                Debug.Log($"Player '{player}' Connected {(isReconnect ? ": Reconnected." : "")}");
 
 
-            if (!SceneAndRoomInfoAvailable) // this is very bad if it hits
-                dataToSend.jsonData = "No room data found.";
+                //if (!SceneAndRoomInfoAvailable) // this is very bad if it hits
+                //    dataToSend.jsonData = "No room data found.";
 
-            sendToPlayer = player;
-            networkManager.Send(sendToPlayer, dataToSend);
+                sendToPlayer = player;
+                networkManager.Send(sendToPlayer, dataToSend);
+            }
+
+            else if (networkManager.isClientOnly) // letting you know that you connected to the server
+            {
+                //mruk.SceneSettings.DataSource = MRUK.SceneDataSource.Json;
+                SpatialLogger.Instance.LogInfo($"I Connected");
+                Debug.Log($"I Connected");
+                //networkManager.SendToServer(dataToSend);
+            }
         }
-
-        else if (networkManager.isClientOnly) // letting you know that you connected to the server
+        catch (Exception e)
         {
-            //mruk.SceneSettings.DataSource = MRUK.SceneDataSource.Json;
-            SpatialLogger.Instance.LogInfo($"I Connected");
-            Debug.Log($"I Connected");
-            //networkManager.SendToServer(dataToSend);
+            Debug.LogError($"ERROR IN Player Join: {e}");
+            SpatialLogger.Instance.LogError($"ERROR IN Player Join: {e}");
         }
+        
 
     }
 
