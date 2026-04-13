@@ -16,9 +16,10 @@ public class Cubert : MonoBehaviour
 
     void Start()
     {
-        transform.position = ra.currentRoom.FloorAnchor.transform.position;
+        Reposition();
+        //transform.position = ra.currentRoom.FloorAnchor.transform.position;
         //transform.eulerAngles = new Vector3(0,ra.currentRoom.FloorAnchor.transform.eulerAngles.y,0);
-        transform.Rotate(0f, (float)ra.theta, 0f, Space.Self);
+        
 
         // to possition the location of the host in realspace. idk if this will work
         //if (ra.currentRoom.FloorAnchor.transform.position != ra.roomDataReceived.roomFloorPosData) // for some reason the code never accepts isServer or isHost
@@ -27,6 +28,13 @@ public class Cubert : MonoBehaviour
         //    transform.position = ra.roomDataReceived.whereIAmInRoom;
         //    transform.rotation = ra.roomDataReceived.roomFloorRotationData;
         //}
+    }
+
+    void Reposition()
+    {
+        //transform.eulerAngles = new Vector3(0,ra.currentRoom.FloorAnchor.transform.eulerAngles.y,0);
+        transform.position = ra.translate;
+        transform.Rotate(0f, (float)ra.theta, 0f, Space.Self);
     }
 
     //// Update is called once per frame
