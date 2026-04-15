@@ -60,9 +60,9 @@ public class RoomAlignment : MonoBehaviour
         public Vector3 roomFloorPosData;
 
         //// the following is used to get ground truth rotation
-        //public Rect mainWall;
-        //public Rect secondaryWall;
-        //public Quaternion roomFloorRotationData;
+        public Rect mainWall;
+        public Rect secondaryWall;
+        public Quaternion roomFloorRotationData;
 
         public Vector3[] walls;
         
@@ -123,11 +123,11 @@ public class RoomAlignment : MonoBehaviour
          */
 
         // set walls data
-        //dataToSend.mainWall = room.WallAnchors[0].PlaneRect.Value;
-        //dataToSend.secondaryWall = room.WallAnchors[1].PlaneRect.Value;
+        dataToSend.mainWall = room.WallAnchors[0].PlaneRect.Value;
+        dataToSend.secondaryWall = room.WallAnchors[1].PlaneRect.Value;
 
-        //dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
-        //dataToSend.roomFloorRotationData = room.transform.rotation;
+        dataToSend.roomFloorPosData = room.FloorAnchor.transform.position;
+        dataToSend.roomFloorRotationData = room.transform.rotation;
 
 
         dataToSend.walls = new Vector3[room.WallAnchors.Count];
@@ -144,7 +144,7 @@ public class RoomAlignment : MonoBehaviour
     }
 
     private void GotData(PlayerID player, sendData data, bool asServer)
-    {       
+    {
         
         try {
             
@@ -154,31 +154,33 @@ public class RoomAlignment : MonoBehaviour
             // This is where the magic happens
 
             // get the same walls for both headsets
-            //(int, int) loc = GetMainSecondaryWalls(data.mainWall, data.secondaryWall);
+            (int, int) loc = GetMainSecondaryWalls(data.mainWall, data.secondaryWall);
 
             // make the center of the room the center of the universe
-            //Vector2 correctedWall = new Vector2(currentRoom.WallAnchors[loc.Item1].transform.position.x, currentRoom.WallAnchors[loc.Item1].transform.position.z); // y is up/down
-            //correctedWall.x -= currentRoom.FloorAnchor.transform.position.x;
-            //correctedWall.y -= currentRoom.FloorAnchor.transform.position.z;
+            Vector2 correctedWall = new Vector2(currentRoom.WallAnchors[loc.Item1].transform.position.x, currentRoom.WallAnchors[loc.Item1].transform.position.z); // y is up/down
+            correctedWall.x -= currentRoom.FloorAnchor.transform.position.x;
+            correctedWall.y -= currentRoom.FloorAnchor.transform.position.z;
 
             // get phi
-            //var phi = Math.Atan(correctedWall.y / correctedWall.x) * Mathf.Rad2Deg; // returns a radian, we need degrees
+            var phi = Math.Atan(correctedWall.y / correctedWall.x) * Mathf.Rad2Deg; // returns a radian, we need degrees
 
             // set true "north" (updated for starting angle)
             theta = currentRoom.FloorAnchor.transform.eulerAngles.y;
             //Debug.Log($"Wall locations in array: {loc}");
-            //print($"Phi {phi} /|\\ Theta: {theta}");
+
+            translate = data.roomFloorPosData;
+            print($"Translation {translate} /|\\ Phi/Theta: {phi}/{theta}");
 
 
 
 
-            if (PointSetRegisration.EstimateRigidTransform(dataToSend.walls, data.walls, out Quaternion rot, out Vector3 translation))
-            {
-                //Debug.Log(pointSetRegistration.RunICP(dataToSend.walls, data.walls, 50, 1e-5f));
-                theta = rot.y;
-                translate = translation;
-                print($"PSR Rotation {rot.eulerAngles} /|\\ PSR Translation {translation}");
-            }
+            //if (PointSetRegisration.EstimateRigidTransform(dataToSend.walls, data.walls, out Quaternion rot, out Vector3 translation))
+            //{
+            //    //Debug.Log(pointSetRegistration.RunICP(dataToSend.walls, data.walls, 50, 1e-5f));
+            //    theta = rot.y;
+            //    translate = translation;
+            //    print($"PSR Rotation {rot.eulerAngles} /|\\ PSR Translation {translation}");
+            //}
 
 
         }
@@ -228,7 +230,7 @@ public class RoomAlignment : MonoBehaviour
 
     }
 
-    /*
+    ///*
 
     private (int, int) GetMainSecondaryWalls(Rect mainWall, Rect secondaryWall)
     {
@@ -324,7 +326,7 @@ public class RoomAlignment : MonoBehaviour
         theta += currentRoom.FloorAnchor.transform.rotation.y - angleBetweenFloorMain;
         print($"Adjust Angle: {theta}");
     }
-    */
+    //*/
 
 
     private double Distance(Vector3 a, Vector3 b)
