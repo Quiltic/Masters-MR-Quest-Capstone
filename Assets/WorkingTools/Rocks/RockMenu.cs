@@ -27,7 +27,7 @@ public class RockMenu : MonoBehaviour
     public PlayerID player;
 
     public GameObject Log;
-    public GameObject UsageBox;
+    public GameObject Help;
 
     private Action<GameObject> lastCommand;
     private GameObject lastGameObj;
@@ -166,7 +166,7 @@ public class RockMenu : MonoBehaviour
     void ToggleLogAndHelp(GameObject Dummy)
     {
         Log.SetActive(!Log.activeInHierarchy);
-        UsageBox.SetActive(!UsageBox.activeInHierarchy);
+        Help.SetActive(!Help.activeInHierarchy);
 
         if (lastCommand != ToggleLogAndHelp || lastGameObj != null)
         {
