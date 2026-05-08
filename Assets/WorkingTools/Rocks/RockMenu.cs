@@ -1,16 +1,13 @@
 using PurrNet;
 using System;
-using System.IO;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 public class RockMenu : MonoBehaviour
 {
 
     private const float SpawnDistanceFromCamera = 0.75f;
+    [Tooltip("The Headset")]
     public OVRCameraRig _cameraRig;
     private Canvas _canvas;
 
@@ -23,14 +20,20 @@ public class RockMenu : MonoBehaviour
     [Tooltip("Gaze pointer for VR interactions")]
     public OVRGazePointer GazePointer;
 
+    [Tooltip("The 'folder' that holds a person's rocks")]
     public GameObject holdMyRocks;
+    [Tooltip("The current player")]
     public PlayerID player;
 
+    [Tooltip("The Log Window")]
     public GameObject Log;
+    [Tooltip("The Help Window")]
     public GameObject Help;
+
 
     private Action<GameObject> lastCommand;
     private GameObject lastGameObj;
+    [Tooltip("What state the Rocks should be in")]
     public int rockState = 0; // 0 is kinematic, 1 is not kinematic (asteroids), and 2 is with gravity
 
 
@@ -105,6 +108,10 @@ public class RockMenu : MonoBehaviour
         Billboard();
     }
 
+    /// <summary>
+    /// Make a Rock based on the Game Object For them
+    /// </summary>
+    /// <param name="rock"></param>
     public void CreateRock(GameObject rock)
     {
         GameObject newRock = Instantiate(rock);
@@ -120,6 +127,10 @@ public class RockMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Destroy all Rocks owned by a Person
+    /// </summary>
+    /// <param name="rockHolder"></param>
     public void DestroyAllMyRocks(GameObject rockHolder)
     {
         while (rockHolder.transform.childCount > 0)
@@ -133,6 +144,10 @@ public class RockMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Change the Rock State for each person's Rocks
+    /// </summary>
+    /// <param name="rockHolder"></param>
     public void ChangeAllRockStates(GameObject rockHolder)
     {
         rockState++;
@@ -150,10 +165,14 @@ public class RockMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the state of the Rocks between: Static, Asteroid, and Gravity
+    /// </summary>
+    /// <param name="rock"></param>
     public void ChangeRockState(GameObject rock)
     {
         Rigidbody rockBody = rock.GetComponentInChildren<Rigidbody>();
-        rockBody.isKinematic = rockState<1; // 0 is kin
+        rockBody.isKinematic = rockState<1; // 0 is kin (static)
         // 1 is no grav no kin (asteroids)
         rockBody.useGravity = rockState == 2; // 2 is grav
 
@@ -162,7 +181,10 @@ public class RockMenu : MonoBehaviour
 
 
 
-
+    /// <summary>
+    /// Toggle the Help and Log window (they are kinda intrusive)
+    /// </summary>
+    /// <param name="Dummy"></param>
     void ToggleLogAndHelp(GameObject Dummy)
     {
         Log.SetActive(!Log.activeInHierarchy);
@@ -175,6 +197,10 @@ public class RockMenu : MonoBehaviour
         }
     }
 
+
+    //////////////////////////////////////////////////////////////
+    /// Below Is all the stuff for the Menu and controling it. ///
+    //////////////////////////////////////////////////////////////
 
     // Makes the menu look at you
     private void Billboard()
