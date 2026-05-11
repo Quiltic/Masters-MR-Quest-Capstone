@@ -31,10 +31,12 @@ public class RockMenu : MonoBehaviour
     public GameObject Help;
 
 
-    private Action<GameObject> lastCommand;
-    private GameObject lastGameObj;
+    public Action<GameObject> lastCommand;
+    public GameObject lastGameObj;
     [Tooltip("What state the Rocks should be in")]
     public int rockState = 0; // 0 is kinematic, 1 is not kinematic (asteroids), and 2 is with gravity
+
+    public MultiplayerManager multiplayerManager;
 
 
     //public GameObject rockButtonHolder;
@@ -77,6 +79,18 @@ public class RockMenu : MonoBehaviour
 
     //}
 
+    public void CallLastCommand(Action<GameObject> command, GameObject gameObj)
+    {
+        command.Invoke(gameObj);
+    }
+
+    public void TellEveryoneAboutChange()
+    {
+        multiplayerManager.dataToSend.calledAction = "Change Rock States";
+        //multiplayerManager.dataToSend.lastCommand = lastCommand;
+        //multiplayerManager.dataToSend.lastGameObj = lastGameObj;
+        multiplayerManager.SendDataMessage();
+    }
 
 
     void Update()
@@ -87,17 +101,22 @@ public class RockMenu : MonoBehaviour
         }
         if (OVRInput.GetDown(OVRInput.RawButton.A))
         {
-            lastCommand.Invoke(lastGameObj);
+            multiplayerManager.print($"Repeating last action!");
+            CallLastCommand(lastCommand, lastGameObj);
+            //TellEveryoneAboutChange();
         }
 
 
         if (OVRInput.GetDown(OVRInput.RawButton.B))
         {
-            ChangeAllRockStates(holdMyRocks);
+            //ChangeAllRockStates(holdMyRocks);
+            UpdateLastData(ChangeAllRockStates, holdMyRocks);
+            TellEveryoneAboutChange();
         }
         if (OVRInput.GetDown(OVRInput.RawButton.X))
         {
             DestroyAllMyRocks(holdMyRocks);
+            //TellEveryoneAboutChange();
         }
         if (OVRInput.GetDown(OVRInput.RawButton.Y))
         {
@@ -108,23 +127,29 @@ public class RockMenu : MonoBehaviour
         Billboard();
     }
 
+    void UpdateLastData(Action<GameObject> command, GameObject gameObj)
+    {
+        if (lastCommand != command || lastGameObj != gameObj)
+        {
+            lastCommand = command;
+            lastGameObj = gameObj;
+        }
+    }
+
     /// <summary>
     /// Make a Rock based on the Game Object For them
     /// </summary>
     /// <param name="rock"></param>
     public void CreateRock(GameObject rock)
     {
+        multiplayerManager.print($"Creating a {rock.name}!");
         GameObject newRock = Instantiate(rock);
         newRock.transform.SetParent(holdMyRocks.transform);
         newRock.transform.position = _cameraRig.rightControllerAnchor.gameObject.transform.position;
         newRock.transform.rotation = _cameraRig.rightControllerAnchor.gameObject.transform.rotation;
         ChangeRockState(newRock);
 
-        if (lastCommand != CreateRock || lastGameObj != rock)
-        {
-            lastCommand = CreateRock;
-            lastGameObj = rock;
-        }
+        UpdateLastData(CreateRock, rock);
     }
 
     /// <summary>
@@ -133,15 +158,23 @@ public class RockMenu : MonoBehaviour
     /// <param name="rockHolder"></param>
     public void DestroyAllMyRocks(GameObject rockHolder)
     {
-        while (rockHolder.transform.childCount > 0)
+        multiplayerManager.print($"Destroying all Rocks!");
+        int childLength = holdMyRocks.transform.childCount;
+        GameObject[] children = new GameObject[childLength];
+
+        multiplayerManager.print($"Number of rocks to del: {childLength} ");
+
+        for (int i = 0; i < childLength; i++)
         {
-            DestroyImmediate(rockHolder.transform.GetChild(0).gameObject);
+            children[i] = holdMyRocks.transform.GetChild(i).gameObject;
         }
-        if (lastCommand != DestroyAllMyRocks || lastGameObj != rockHolder)
+
+        foreach (GameObject child in children)
         {
-            lastCommand = DestroyAllMyRocks;
-            lastGameObj = rockHolder;
+            Destroy(child);
         }
+        
+        UpdateLastData(DestroyAllMyRocks, rockHolder);
     }
 
     /// <summary>
@@ -150,6 +183,7 @@ public class RockMenu : MonoBehaviour
     /// <param name="rockHolder"></param>
     public void ChangeAllRockStates(GameObject rockHolder)
     {
+        multiplayerManager.print($"Switching rock states to: {((rockState == 0) ? "Static" : (rockState == 2) ? "Gravity" : "Astroids") } ");
         rockState++;
         rockState = rockState % 3; // loop back to 0
 
@@ -158,11 +192,7 @@ public class RockMenu : MonoBehaviour
             ChangeRockState(rock.gameObject);
         }
 
-        if (lastCommand != ChangeAllRockStates || lastGameObj != rockHolder)
-        {
-            lastCommand = ChangeAllRockStates;
-            lastGameObj = rockHolder;
-        }
+        UpdateLastData(ChangeAllRockStates, rockHolder);
     }
 
     /// <summary>
@@ -175,7 +205,6 @@ public class RockMenu : MonoBehaviour
         rockBody.isKinematic = rockState<1; // 0 is kin (static)
         // 1 is no grav no kin (asteroids)
         rockBody.useGravity = rockState == 2; // 2 is grav
-
     }
 
 

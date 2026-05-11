@@ -234,6 +234,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f9b2db009c3a7c48aa721b812bc9aff, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7509090972000433416}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f9b2db009c3a7c48aa721b812bc9aff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1583955473414148069}
     - targetCorrespondingSourceObject: {fileID: 8164078558771037576, guid: 1f9b2db009c3a7c48aa721b812bc9aff, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2760224195463769551}
@@ -269,7 +272,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -364,3 +367,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ResizeMe
   minimumSize: 0
   resizeSpeed: 2
+--- !u!114 &-1583955473414148069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8863990312823567066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 817fe5016bd0a2a49a95b6eb338bb132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PurrNet.Runtime::PurrNet.NetworkTransform
+  _isSetup: 0
+  _prefabId: -2147483648
+  _componentIndex: -2147483648
+  _shouldBePooled: 0
+  _parent: {fileID: 0}
+  _invertedPathToNearestParent: 
+  _directChildren: []
+  _networkRules: {fileID: 0}
+  _visitiblityRules: {fileID: 0}
+  _syncPosition: 1
+  _syncRotation: 1
+  _syncScale: 1
+  _syncParent: 1
+  _interpolateSettings: 7
+  _minBufferSize: 1
+  _maxBufferSize: 2
+  _characterControllerPatch: 0
+  _ownerAuth: 1
+  _interpolationTiming: 0

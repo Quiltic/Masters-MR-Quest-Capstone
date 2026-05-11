@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bouncy Ball
       objectReference: {fileID: 0}
+    - target: {fileID: 5068262726240870284, guid: df8c27c3d9845d446824db543eed5ff7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7279392778849922099, guid: df8c27c3d9845d446824db543eed5ff7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
