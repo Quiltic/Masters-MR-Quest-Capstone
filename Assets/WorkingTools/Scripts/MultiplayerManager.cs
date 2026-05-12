@@ -32,6 +32,7 @@ public class MultiplayerManager : MonoBehaviour
     public struct sendData : IPackedAuto
     {
         public string calledAction;
+        public int state;
         //public string calledMessage;
         //public Action<GameObject> lastCommand;
         //public GameObject lastGameObj;
@@ -74,8 +75,21 @@ public class MultiplayerManager : MonoBehaviour
                 return;
 
             print($"Recieved Data From: {player}");
-            //rockMenu.CallLastCommand(data.lastCommand, null);
-            rockMenu.CallLastCommand(rockMenu.lastCommand, rockMenu.lastGameObj);
+
+
+            if (rockMenu.rockState == data.state) // we dont need to repeat what was already done
+                return;
+
+            rockMenu.rockState = data.state+2; // one less than whatever we need (in an extreamly roundabout way)
+            rockMenu.ChangeAllRockStates(rockMenu.holdMyRocks);
+
+            if (networkManager.isServer || networkManager.isHost)
+            {
+                dataToSend.calledAction = data.calledAction;
+                dataToSend.state = data.state;
+
+                networkManager.SendToAll(dataToSend);
+            }
         }
 
         catch (Exception e)

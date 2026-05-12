@@ -36,6 +36,9 @@ public class RockMenu : MonoBehaviour
     [Tooltip("What state the Rocks should be in")]
     public int rockState = 0; // 0 is kinematic, 1 is not kinematic (asteroids), and 2 is with gravity
 
+    [Tooltip("The default template for the rock.")]
+    public GameObject rockTemplate;
+
     public MultiplayerManager multiplayerManager;
 
 
@@ -87,6 +90,7 @@ public class RockMenu : MonoBehaviour
     public void TellEveryoneAboutChange()
     {
         multiplayerManager.dataToSend.calledAction = "Change Rock States";
+        multiplayerManager.dataToSend.state = rockState;
         //multiplayerManager.dataToSend.lastCommand = lastCommand;
         //multiplayerManager.dataToSend.lastGameObj = lastGameObj;
         multiplayerManager.SendDataMessage();
@@ -109,9 +113,9 @@ public class RockMenu : MonoBehaviour
 
         if (OVRInput.GetDown(OVRInput.RawButton.B))
         {
-            //ChangeAllRockStates(holdMyRocks);
-            UpdateLastData(ChangeAllRockStates, holdMyRocks);
-            TellEveryoneAboutChange();
+            ChangeAllRockStates(holdMyRocks);
+            //UpdateLastData(ChangeAllRockStates, holdMyRocks);
+            //TellEveryoneAboutChange();
         }
         if (OVRInput.GetDown(OVRInput.RawButton.X))
         {
@@ -193,6 +197,7 @@ public class RockMenu : MonoBehaviour
         }
 
         UpdateLastData(ChangeAllRockStates, rockHolder);
+        TellEveryoneAboutChange();
     }
 
     /// <summary>

@@ -2,3 +2,6 @@ Encription key
 efcb6f518b9e1e9288350559507cb49fa00cb4c18235fe6d07013ce8f24f4787
 
 Yes I know your not suposed to show anyone, but security is not my main focus for this capstone.
+
+
+https://github.com/Whinarn/UnityMeshSimplifier/
