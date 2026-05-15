@@ -2031,7 +2031,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8797251368361692871, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 358143911121094752, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 29406157191400737, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 6561130589697708648, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 5431519016841465580, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 4616041823167176919, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 2746926858251273629, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 8479038461368898515, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 4620321845080289457, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+    - {fileID: 5469220048187218308, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6230960824364638381, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
@@ -9762,8 +9772,8 @@ MonoBehaviour:
     reflectionProbeUsage: 0
   rockButtonHolder: {fileID: 1404019189}
   rockButtonTemp: {fileID: 7660773895260068702, guid: 3e8552025b1c5d642911633a14c73692, type: 3}
+  rockScale: 0.2
   rockTemplate: {fileID: 5983262945813718780, guid: f94703f0dbe3b9d48a8d6fcc403cfb43, type: 3}
-  MYFUCKINGROCKBRO: {fileID: 0}
 --- !u!1 &1244990177
 GameObject:
   m_ObjectHideFlags: 0
