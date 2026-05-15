@@ -8,7 +8,7 @@ using static UnityEngine.UI.GridLayoutGroup;
 public class ResizeMe : MonoBehaviour
 {
 
-    public float minimumSize; // the minimum size we want the object to be. Defaults to the creation size.
+    public float minimumSize = 0.1f; // the minimum size we want the object to be. Defaults to the creation size.
     private float startingDistance; // What the starting distance between controllers prior to resizing
     private Vector3 startingSizeOfResize; // What the size of the gameobject is prior to resizing
     public float resizeSpeed = 2.0f;

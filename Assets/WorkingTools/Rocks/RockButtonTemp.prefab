@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 6756391301971045011}
   - component: {fileID: 1613404568019682622}
   m_Layer: 5
-  m_Name: RockButtonTemp
+  m_Name: rockButtonTemp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

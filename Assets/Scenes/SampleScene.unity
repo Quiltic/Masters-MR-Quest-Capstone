@@ -1870,6 +1870,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 29406157191400737, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 358143911121094752, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2746926858251273629, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
       propertyPath: Log
       value: 
@@ -1887,9 +1899,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 166201655}
     - target: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: rockTemplate
+      value: 
+      objectReference: {fileID: 7572021408366769732, guid: f94703f0dbe3b9d48a8d6fcc403cfb43, type: 3}
+    - target: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: createButtons
+      value: 
+      objectReference: {fileID: 1244229115}
+    - target: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: rockButtonTemp
+      value: 
+      objectReference: {fileID: 5983262945813718780, guid: f94703f0dbe3b9d48a8d6fcc403cfb43, type: 3}
+    - target: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: rockButtonHolder
+      value: 
+      objectReference: {fileID: 1404019189}
+    - target: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
       propertyPath: multiplayerManager
       value: 
       objectReference: {fileID: 729412185}
+    - target: {fileID: 4616041823167176919, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5431519016841465580, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5569599757490599951, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1978,6 +2014,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6561130589697708648, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8479038461368898515, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797251368361692871, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9129581595409131812, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1985,7 +2033,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6230960824364638381, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1244229115}
   m_SourcePrefab: {fileID: 100100000, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
 --- !u!1 &249493450
 GameObject:
@@ -3712,7 +3763,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3208212069586027589, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
   m_PrefabInstance: {fileID: 239543695}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1244229106}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a893fc7cf88aba41a404c83199dff3c, type: 3}
@@ -8429,7 +8480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3972639446654333824, guid: 09fabd152d5cd4c43ab29d9ca5678c6c, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5772960170370281511, guid: 09fabd152d5cd4c43ab29d9ca5678c6c, type: 3}
       propertyPath: m_IsKinematic
@@ -9640,6 +9691,79 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.00616638, y: -0.029108923, z: -0.018820617}
     m_Extent: {x: 0.033926036, y: 0.042694185, z: 0.05639166}
   m_DirtyAABB: 0
+--- !u!1 &1244229106 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6230960824364638381, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+  m_PrefabInstance: {fileID: 239543695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1244229115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244229106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbd4f888b73b8ad4d86399b584e7ff04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CreateButtons
+  simplificationOptions:
+    PreserveBorderEdges: 0
+    PreserveUVSeamEdges: 0
+    PreserveUVFoldoverEdges: 0
+    PreserveSurfaceCurvature: 0
+    EnableSmartLink: 1
+    VertexLinkDistance: 5e-324
+    MaxIterationCount: 100
+    Agressiveness: 7
+    ManualUVComponentCount: 0
+    UVComponentCount: 2
+  autoCollectRenderers: 1
+  levels:
+  - screenRelativeTransitionHeight: 0.75
+    fadeTransitionWidth: 0
+    quality: 1
+    combineMeshes: 0
+    combineSubMeshes: 0
+    renderers: []
+    skinQuality: 0
+    shadowCastingMode: 1
+    receiveShadows: 1
+    motionVectorGenerationMode: 1
+    skinnedMotionVectors: 1
+    lightProbeUsage: 1
+    reflectionProbeUsage: 1
+  - screenRelativeTransitionHeight: 0.45
+    fadeTransitionWidth: 0
+    quality: 0.45
+    combineMeshes: 1
+    combineSubMeshes: 0
+    renderers: []
+    skinQuality: 0
+    shadowCastingMode: 1
+    receiveShadows: 1
+    motionVectorGenerationMode: 1
+    skinnedMotionVectors: 1
+    lightProbeUsage: 1
+    reflectionProbeUsage: 3
+  - screenRelativeTransitionHeight: 0.02
+    fadeTransitionWidth: 0
+    quality: 0.25
+    combineMeshes: 1
+    combineSubMeshes: 1
+    renderers: []
+    skinQuality: 2
+    shadowCastingMode: 0
+    receiveShadows: 0
+    motionVectorGenerationMode: 1
+    skinnedMotionVectors: 0
+    lightProbeUsage: 0
+    reflectionProbeUsage: 0
+  rockButtonHolder: {fileID: 1404019189}
+  rockButtonTemp: {fileID: 7660773895260068702, guid: 3e8552025b1c5d642911633a14c73692, type: 3}
+  rockTemplate: {fileID: 5983262945813718780, guid: f94703f0dbe3b9d48a8d6fcc403cfb43, type: 3}
+  MYFUCKINGROCKBRO: {fileID: 0}
 --- !u!1 &1244990177
 GameObject:
   m_ObjectHideFlags: 0
@@ -10515,6 +10639,110 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 36451124}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1404019189 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4360818867388531750, guid: 8c2da15a292330841b92fd2b436a6fd0, type: 3}
+  m_PrefabInstance: {fileID: 239543695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1405347041
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1405347043}
+  - component: {fileID: 1405347042}
+  m_Layer: 0
+  m_Name: quickrockgeneration
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1405347042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405347041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef65fd482c70b8d479462d8a115012ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::quickrockgeneration
+  rockTemplate: {fileID: 5983262945813718780, guid: f94703f0dbe3b9d48a8d6fcc403cfb43, type: 3}
+  rockOBJ: {fileID: 8164078558771037576, guid: 11e47550b450b8143aa3090e6d281fa4, type: 3}
+  simplificationOptions:
+    PreserveBorderEdges: 0
+    PreserveUVSeamEdges: 0
+    PreserveUVFoldoverEdges: 0
+    PreserveSurfaceCurvature: 0
+    EnableSmartLink: 1
+    VertexLinkDistance: 5e-324
+    MaxIterationCount: 100
+    Agressiveness: 7
+    ManualUVComponentCount: 0
+    UVComponentCount: 2
+  autoCollectRenderers: 1
+  levels:
+  - screenRelativeTransitionHeight: 0.75
+    fadeTransitionWidth: 0
+    quality: 1
+    combineMeshes: 0
+    combineSubMeshes: 0
+    renderers: []
+    skinQuality: 0
+    shadowCastingMode: 1
+    receiveShadows: 1
+    motionVectorGenerationMode: 1
+    skinnedMotionVectors: 1
+    lightProbeUsage: 1
+    reflectionProbeUsage: 1
+  - screenRelativeTransitionHeight: 0.45
+    fadeTransitionWidth: 0
+    quality: 0.45
+    combineMeshes: 1
+    combineSubMeshes: 0
+    renderers: []
+    skinQuality: 0
+    shadowCastingMode: 1
+    receiveShadows: 1
+    motionVectorGenerationMode: 1
+    skinnedMotionVectors: 1
+    lightProbeUsage: 1
+    reflectionProbeUsage: 3
+  - screenRelativeTransitionHeight: 0.02
+    fadeTransitionWidth: 0
+    quality: 0.25
+    combineMeshes: 1
+    combineSubMeshes: 1
+    renderers: []
+    skinQuality: 2
+    shadowCastingMode: 0
+    receiveShadows: 0
+    motionVectorGenerationMode: 1
+    skinnedMotionVectors: 0
+    lightProbeUsage: 0
+    reflectionProbeUsage: 0
+  rockToPrint: {fileID: 0}
+--- !u!4 &1405347043
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405347041}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.29798, y: 0.47992, z: 0.204}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1411136568
 GameObject:
@@ -16151,3 +16379,4 @@ SceneRoots:
   - {fileID: 928959420}
   - {fileID: 227368839}
   - {fileID: 1790978954}
+  - {fileID: 1405347043}

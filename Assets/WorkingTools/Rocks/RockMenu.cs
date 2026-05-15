@@ -1,7 +1,13 @@
 using PurrNet;
 using System;
+using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityMeshSimplifier;
+using static JamesFrowen.SimpleWeb.Log;
+using static Meta.XR.MRUtilityKit.MRUKRoom;
 
 public class RockMenu : MonoBehaviour
 {
@@ -36,15 +42,13 @@ public class RockMenu : MonoBehaviour
     [Tooltip("What state the Rocks should be in")]
     public int rockState = 0; // 0 is kinematic, 1 is not kinematic (asteroids), and 2 is with gravity
 
-    [Tooltip("The default template for the rock.")]
-    public GameObject rockTemplate;
+    
 
     public MultiplayerManager multiplayerManager;
+    public CreateButtons createButtons;
 
 
-    //public GameObject rockButtonHolder;
-    //public GameObject rockButtonTemp;
-    //public string jsonFile;
+   
 
     private void Awake()
     {
@@ -52,35 +56,13 @@ public class RockMenu : MonoBehaviour
         _canvas = GetComponent<Canvas>();
         SnapMenuInFrontOfCamera();
         SetupInteractionDependencies();
-        //    string folderPath = Application.dataPath + "/WorkingTools/Rocks";
 
-        //    if (Directory.Exists(folderPath))
-        //    {
-        //        //string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly); // Fetch all files
-        //        string[] folders = Directory.GetDirectories(folderPath, "*", SearchOption.TopDirectoryOnly); // Fetch all folders
-        //        foreach (string folder in folders)
-        //        {
-        //            Debug.Log("Folder: " + folder);
-        //            Resources.Load(folder); // If we do this method you need to put everything inside of the Resources folder
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Folder does not exist: " + folderPath);
-        //    }
+        //multiplayerManager.networkManager.isStarted
+        createButtons.CreateRockAction = CreateRock;
+        createButtons.CreateMenu();
     }
 
-    //private void CreateButton(string folderName,Sprite image)
-    //{
-    //    GameObject newButton = Instantiate(rockButtonTemp);
-    //    newButton.name = folderName;
 
-    //    TMP_Text text = newButton.GetComponentInChildren<TMPro.TMP_Text>();
-    //    text.text = folderName.Substring(0,1).ToUpper() + folderName.Substring(1); // make the folder name capital
-
-    //    newButton.GetComponentInChildren<Image>().sprite = image;
-
-    //}
 
     public void CallLastCommand(Action<GameObject> command, GameObject gameObj)
     {
