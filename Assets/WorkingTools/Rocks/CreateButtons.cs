@@ -3,8 +3,16 @@ using System;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
 using UnityMeshSimplifier;
+
+[Serializable]
+public struct baseRockTuple // this is dumb but idk how to show it in the editor otherwise
+{
+    public GameObject rockOBJ;
+    public Sprite rockImage;
+}
 
 public class CreateButtons : MonoBehaviour
 {
@@ -16,7 +24,7 @@ public class CreateButtons : MonoBehaviour
     [SerializeField, Tooltip("The LOD levels.")]
     private LODLevel[] levels = new LODLevel[]
         {
-            new LODLevel(0.75f, 1f)
+            new LODLevel(0.65f, 1f)
             {
                 CombineMeshes = false,
                 CombineSubMeshes = false,
@@ -66,20 +74,47 @@ public class CreateButtons : MonoBehaviour
     [Tooltip("The default template for the rock.")]
     public Action<GameObject> CreateRockAction;
 
+    [SerializeField, Tooltip("The base rocks the program builds with.")]
+    public baseRockTuple[] baseRocks;
+
 
     private GameObject[] rocksToPrint;
 
 
+    public void CreateBaseMenu()
+    {
+        if (rocksToPrint == null) // missing rock folder
+            rocksToPrint = new GameObject[baseRocks.Length];
+
+        int indx = 0;
+        string name;
+        foreach (baseRockTuple rock in baseRocks)
+        {
+            name = rock.rockOBJ.name;
+            rocksToPrint[indx] = CreateRockToPrint(rock.rockOBJ, name);
+            CreateButton(name, rock.rockImage, indx);
+            indx++;
+        }
+
+    }
+
 
     public void CreateMenu()
     {
+        // <MAYBE HELP WITH BUILD?>
+        //https://discussions.unity.com/t/load-from-resource-folder-in-build-pc/886596/3
+
         string folderPath = Application.dataPath + "/Resources/Rocks";
+        //Debug.LogError(folderPath);
+        // persistentDataPath: C:/Users/xrsystem1/AppData/LocalLow/XRLab/JZCapstone/Resources/Rocks
+        // dataPath:           C:/Users/xrsystem1/Documents/JZCapstone/Masters-MR-Quest-Capstone/Assets/Resources/Rocks
+        
 
         if (Directory.Exists(folderPath))
         {
             //string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly); // Fetch all files
             string[] folders = Directory.GetDirectories(folderPath, "*", SearchOption.TopDirectoryOnly); // Fetch all folders
-            rocksToPrint = new GameObject[folders.Length];
+            rocksToPrint = new GameObject[baseRocks.Length + folders.Length];
 
             int indx = 0;
             foreach (string folder in folders)
@@ -90,12 +125,12 @@ public class CreateButtons : MonoBehaviour
                 //Resources.Load(folder); // If we do this method you need to put everything inside of the Resources folder
 
                 
-
                 Sprite image = Resources.Load<Sprite>($"Rocks/{folderName}/image");
                 //Debug.LogError($"{image.name}: Rocks/{folderName}/image");
                 CreateButton(folderName, image, indx);
 
                 GameObject rockOBJ = Resources.Load<GameObject>($"Rocks/{folderName}/mesh");
+
                 //Debug.LogError($"{rockOBJ.transform.Find("default").gameObject}: Rocks/{folderName}/mesh"); // we need its baby since that has all the stuff I want
 
                 rocksToPrint[indx] = CreateRockToPrint(rockOBJ.transform.Find("default").gameObject, folderName);
@@ -107,6 +142,8 @@ public class CreateButtons : MonoBehaviour
         {
             Debug.LogError("Folder does not exist: " + folderPath);
         }
+
+        CreateBaseMenu(); // because these are base we can have them be at the end of creation
     }
 
     private void CreateButton(string folderName, Sprite image, int index)
@@ -165,5 +202,45 @@ public class CreateButtons : MonoBehaviour
         rock.name = _name;
         rock.transform.position = Vector3.one * 10000; // way beond the cull mesh so they take little to no render memory
         return (rock);
+    }
+
+
+    public void GatherDefaults()
+    {
+        // <MAYBE HELP WITH BUILD?>
+        //https://discussions.unity.com/t/load-from-resource-folder-in-build-pc/886596/3
+
+        string folderPath = Application.dataPath + "/Resources/DefaultRocks";
+        //Debug.LogError(folderPath);
+
+
+        if (Directory.Exists(folderPath))
+        {
+            //string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly); // Fetch all files
+            string[] folders = Directory.GetDirectories(folderPath, "*", SearchOption.TopDirectoryOnly); // Fetch all folders
+            baseRocks = new baseRockTuple[folders.Length];
+
+            int indx = 0;
+            foreach (string folder in folders)
+            {
+                string folderName = folder.Replace(folderPath + "\\", ""); // lazy way of doing this
+                folderName = folderName.Substring(0, 1).ToUpper() + folderName.Substring(1); // make the folder name capital
+                //Debug.Log("Folder: " + folder);
+
+
+                GameObject rockOBJ = Resources.Load<GameObject>($"DefaultRocks/{folderName}/mesh");
+                Sprite image = Resources.Load<Sprite>($"DefaultRocks/{folderName}/image");
+
+                baseRocks[indx].rockOBJ = rockOBJ.transform.Find("default").gameObject;
+                baseRocks[indx].rockOBJ.name = folderName;
+                baseRocks[indx].rockImage = image;
+
+                indx++;
+            }
+        }
+        else
+        {
+            Debug.LogError("Folder does not exist: " + folderPath);
+        }
     }
 }

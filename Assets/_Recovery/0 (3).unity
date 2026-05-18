@@ -9774,23 +9774,6 @@ MonoBehaviour:
   rockButtonTemp: {fileID: 7660773895260068702, guid: 3e8552025b1c5d642911633a14c73692, type: 3}
   rockScale: 0.2
   rockTemplate: {fileID: 5983262945813718780, guid: f94703f0dbe3b9d48a8d6fcc403cfb43, type: 3}
-  baseRocks:
-  - rockOBJ: {fileID: 8164078558771037576, guid: 1f9b2db009c3a7c48aa721b812bc9aff, type: 3}
-    rockImage: {fileID: 21300000, guid: a791e4591ff64854ea26e13cf1b8474c, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: 74eec8f246688d640b266639f4fee995, type: 3}
-    rockImage: {fileID: 21300000, guid: 425cc8368e9cd6445909b9894e2f1a9b, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: 3fe4e45f61b10f04cbd5b5e9f0d61936, type: 3}
-    rockImage: {fileID: 21300000, guid: 40d9c96a7656ada4284ea7f173e4af15, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: 11e47550b450b8143aa3090e6d281fa4, type: 3}
-    rockImage: {fileID: 21300000, guid: a84facfeaa669744ca561b7c133d51af, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: 023da63c4ade0d2469066b379d3fb565, type: 3}
-    rockImage: {fileID: 21300000, guid: 386955d3bc4abfa4ba7b38ebc559822d, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: 4ded662783ba95645b05f6a55be3a7eb, type: 3}
-    rockImage: {fileID: 21300000, guid: b800578e1e53b514e80095501fed3511, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: c6ee7a4c3a5b37440b725426163e9041, type: 3}
-    rockImage: {fileID: 21300000, guid: acc77222defb7d1408b994d6ddac6047, type: 3}
-  - rockOBJ: {fileID: 8164078558771037576, guid: d8722f908f32aeb4dbe5f726b610e324, type: 3}
-    rockImage: {fileID: 21300000, guid: f14bd001e4f1ac24aa8fe1de79a48762, type: 3}
 --- !u!1 &1244990177
 GameObject:
   m_ObjectHideFlags: 0
@@ -12823,8 +12806,8 @@ Transform:
   m_GameObject: {fileID: 1676081325}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: -0.5}
-  m_LocalPosition: {x: 0, y: 0, z: 0.7}
-  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
+  m_LocalPosition: {x: 0, y: 0, z: 0.204}
+  m_LocalScale: {x: 0.11, y: 0.11, z: 0.11}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1306717448}
